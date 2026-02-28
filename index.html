@@ -3,61 +3,97 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VexCode</title>
+<title>VexCode | Secured</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-    /* Styling for the hidden content area */
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-    body { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; overflow-x: hidden; min-height: 100vh; }
+    body { background: #0f172a; color: white; min-height: 100vh; display: flex; flex-direction: column; }
+    
+    #main-interface { width: 100%; transition: opacity 0.5s; }
     header { display: flex; justify-content: space-between; align-items: center; padding: 25px 8%; }
-    .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; }
+    .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: 1px; color: #38bdf8; }
     
-    .hero { text-align: center; padding: 50px 10%; }
-    .hero h1 { font-size: 3.5rem; font-weight: 800; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    
-    #login { text-align: center; margin-top: 50px; background: rgba(255,255,255,0.03); padding: 30px; border-radius: 20px; display: inline-block; border: 1px solid rgba(255,255,255,0.1); }
-    #login input { padding: 12px; font-size: 1rem; margin: 10px 0; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: white; width: 250px; }
-    #login button { padding: 12px 30px; border-radius: 50px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 600; width: 100%; }
-    
-    .download-btn { padding: 16px 40px; border-radius: 50px; background: linear-gradient(90deg, #6366f1, #3b82f6); color: white; text-decoration: none; font-weight: 600; display: inline-block; }
-    
-    #content, #imageArea { display: none; margin-top: 40px; }
-    #imageArea img { max-width: 90%; border-radius: 15px; border: 2px solid #38bdf8; margin-top: 20px; }
+    .hero { text-align: center; padding: 50px 5%; }
+    h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; background: linear-gradient(90deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    #login { background: rgba(255,255,255,0.03); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); display: inline-block; width: 100%; max-width: 350px; }
+    input { padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #334155; background: #1e293b; color: white; width: 100%; outline: none; }
+    button { padding: 14px; border-radius: 50px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 600; width: 100%; transition: 0.3s; }
+    button:hover { background: #3b82f6; }
+
+    #content { display: none; flex-direction: column; align-items: center; gap: 15px; margin-top: 30px; }
+    .download-btn { padding: 16px 40px; border-radius: 50px; background: linear-gradient(90deg, #6366f1, #3b82f6); color: white; text-decoration: none; font-weight: 600; width: 80%; max-width: 300px; text-align: center; }
+
+    /* FULL SCREEN IMAGE VIEW */
+    #imageArea { 
+        display: none; 
+        position: fixed; 
+        top: 0; left: 0; 
+        width: 100vw; height: 100vh; 
+        background: #000; 
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+    }
+    #imageArea img { 
+        max-width: 100%; 
+        max-height: 100%; 
+        object-fit: contain; 
+        border-radius: 8px;
+    }
+    .close-view {
+        position: absolute;
+        top: 20px; right: 20px;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-weight: bold;
+        text-decoration: none;
+    }
 </style>
 </head>
 <body>
 
-<header><div class="logo">VexCode</div></header>
+<div id="main-interface">
+    <header><div class="logo">VexCode</div></header>
 
-<section class="hero">
-    <h1>Powerful. Clean. Fast.</h1>
-    <div id="login">
-        <h2>Access Panel</h2>
-        <input type="text" id="user" placeholder="Username"><br>
-        <input type="password" id="pass" placeholder="Password"><br>
-        <button onclick="checkLogin()">Unlock</button>
-        <p id="msg" style="color:#f87171; margin-top: 10px;"></p>
-    </div>
+    <section class="hero">
+        <h1>Powerful. Clean. Fast.</h1>
+        
+        <div id="login">
+            <h2>Access Panel</h2>
+            <input type="text" id="user" placeholder="Username">
+            <input type="password" id="pass" placeholder="Password">
+            <button onclick="checkLogin()">Unlock Content</button>
+            <p id="msg" style="color:#f87171; margin-top: 10px; font-size: 0.9rem;"></p>
+        </div>
 
-    <div id="content">
-        <a id="pcDownload" class="download-btn" target="_blank">Download for PC</a>
-        <a id="androidDownload" class="download-btn" target="_blank">Download for Android</a>
-    </div>
+        <div id="content">
+            <h2 style="margin-bottom:10px;">Admin Downloads</h2>
+            <a id="pcDownload" class="download-btn" target="_blank">Download for PC</a>
+            <a id="androidDownload" class="download-btn" target="_blank">Download for Android</a>
+        </div>
+    </section>
+</div>
 
-    <div id="imageArea">
-        <h2>Exclusive Content Unlocked</h2>
-        <img id="secretImg" src="" alt="System Data">
-    </div>
-</section>
+<div id="imageArea">
+    <a href="javascript:location.reload()" class="close-view">✕</a>
+    <img id="secretImg" src="" alt="Locked Content">
+</div>
 
 <script>
-// Downloads and Passwords
+// Encoded Data
 const pcLinkNums = [104,116,116,112,115,58,47,47,119,119,119,46,100,114,111,112,98,111,120,46,99,111,109,47,115,99,108,47,102,105,47,97,100,122,114,112,99,56,48,107,113,102,117,109,122,102,103,54,53,107,50,122,47,88,101,110,111,45,118,49,46,51,46,50,53,98,46,122,105,112,63,114,108,107,101,121,61,103,51,101,114,104,113,119,57,119,117,120,101,119,106,54,103,111,99,98,48,118,117,100,103,49,38,115,116,61,98,109,49,115,50,118,114,111,38,100,108,61,49];
 const androidLinkNums = [104,116,116,112,115,58,47,47,119,119,119,46,100,114,111,112,98,111,120,46,99,111,109,47,115,99,108,47,102,105,47,56,55,115,98,52,52,118,121,109,122,109,108,50,121,108,97,115,56,55,114,54,47,68,101,108,116,97,69,120,101,99,117,116,111,114,45,118,50,46,55,48,57,46,97,112,107,63,114,108,107,101,121,61,105,114,111,57,119,114,113,119,102,103,111,97,108,113,48,48,53,119,54,50,112,99,116,117,49,112,38,115,116,61,122,100,109,107,48,99,48,119,38,100,108,61,49];
-const passDL = [48,53,51,50,57,53,48,57,46,99,111,100,101]; 
-const passImg = [99,111,100,101,46,48,53,51,50,57,53,48,57]; 
 
-// ENCODED PATH: "sys-metadata/config_042.dat.jpg"
+// Passwords (Stay the same)
+const passDL = [48,53,51,50,57,53,48,57,46,99,111,100,101]; // 05329509.code
+const passImg = [99,111,100,101,46,48,53,51,50,57,53,48,57]; // code.05329509
+
+// Path: "sys-metadata/config_042.dat.jpg"
 const secretPath = [115, 121, 115, 45, 109, 101, 116, 97, 100, 97, 116, 97, 47, 99, 111, 110, 102, 105, 103, 95, 48, 52, 50, 46, 100, 97, 116, 46, 106, 112, 103];
 
 function decode(nums) { return String.fromCharCode(...nums); }
@@ -67,24 +103,27 @@ function checkLogin() {
     const pass = document.getElementById('pass').value;
     const msg = document.getElementById('msg');
 
-    if (user === 'VexCode') {
-        if (pass === decode(passDL)) {
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('pcDownload').href = decode(pcLinkNums);
-            document.getElementById('androidDownload').href = decode(androidLinkNums);
-            document.getElementById('content').style.display = 'flex';
-        } 
-        else if (pass === decode(passImg)) {
-            document.getElementById('login').style.display = 'none';
-            // Points to folder + filename + force-refresh code
-            document.getElementById('secretImg').src = decode(secretPath) + '?v=' + Date.now();
-            document.getElementById('imageArea').style.display = 'block';
-        } 
-        else {
-            msg.innerText = 'Incorrect password.';
+    // 1. ADMIN DOWNLOADS ACCESS
+    if (user === 'VexCode.admin' && pass === decode(passDL)) {
+        document.getElementById('login').style.display = 'none';
+        document.getElementById('pcDownload').href = decode(pcLinkNums);
+        document.getElementById('androidDownload').href = decode(androidLinkNums);
+        document.getElementById('content').style.display = 'flex';
+    } 
+    // 2. IMAGE ACCESS
+    else if (user === 'VexCode' && pass === decode(passImg)) {
+        document.getElementById('main-interface').style.display = 'none';
+        const imgElement = document.getElementById('secretImg');
+        imgElement.src = decode(secretPath) + '?v=' + Date.now();
+        document.getElementById('imageArea').style.display = 'flex';
+    } 
+    // 3. ERROR HANDLING
+    else {
+        if (user !== 'VexCode' && user !== 'VexCode.admin') {
+            msg.innerText = 'User not found.';
+        } else {
+            msg.innerText = 'Incorrect password for this user.';
         }
-    } else {
-        msg.innerText = 'User not found.';
     }
 }
 </script>
