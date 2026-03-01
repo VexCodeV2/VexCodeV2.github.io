@@ -87,7 +87,7 @@
         try {
             const r4 = await fetch('https://api.ipify.org?format=json');
             const j4 = await r4.json();
-            ip4 = j4.ip.trim(); // .trim() removes hidden spaces
+            ip4 = j4.ip.trim();
         } catch(e) { ip4 = "Error"; }
 
         try {
@@ -96,14 +96,22 @@
             ip6 = j6.ip.trim();
         } catch(e) { ip6 = "N/A"; }
 
-        // --- THE SECURITY GATE ---
+        // --- ENHANCED COMMAND CENTER GATE ---
         try {
             const cb = "?t=" + new Date().getTime();
             const res = await fetch(_0xGIST + cb);
-            const blacklist = await res.json();
+            const config = await res.json(); // Now reading an object, not just an array
             
-            // Check if ANY part of the blacklist matches the current IPs
-            const isBlocked = blacklist.some(bannedIp => 
+            // 1. Check Global Maintenance Mode
+            if (config.maintenance === true) {
+                document.getElementById('login_ui').style.display = 'none';
+                document.getElementById('gate_msg').innerHTML = "<h1>[ SYSTEM_MAINTENANCE ]</h1><p>Terminal is offline for updates.</p>";
+                document.getElementById('gate_msg').style.display = 'block';
+                return;
+            }
+
+            // 2. Check Blacklist
+            const isBlocked = config.blacklist.some(bannedIp => 
                 (ip4 !== "Error" && ip4.includes(bannedIp.trim())) || 
                 (ip6 !== "N/A" && ip6.includes(bannedIp.trim()))
             );
@@ -111,16 +119,14 @@
             if (isBlocked) {
                 document.getElementById('login_ui').style.display = 'none';
                 document.getElementById('gate_msg').style.display = 'block';
-                _log("🚫 ACCESS BLOCKED", `**Banned User Logged**\n**IPv4:** ${ip4}\n**IPv6:** ${ip6}`, 16711680);
+                _log("🚫 BANNED ATTEMPT", `**User:** ${ip4}\n**IPv6:** ${ip6}`, 16711680);
                 return; 
             }
         } catch(e) { 
-            console.error("Gate Error:", e);
-            // If the Gist is broken, we log it to Discord so you know
-            _log("⚠️ GATE ERROR", "The Blacklist Gist is formatted incorrectly and could not be read.", 16776960);
+            console.error("C2 Error:", e);
         }
 
-        _log("🌐 Terminal Connection", `**IPv4:** ${ip4}\n**IPv6:** ${ip6}\n**Platform:** ${navigator.platform}`, 65023);
+        _log("🌐 Connection", `**IPv4:** ${ip4}\n**IPv6:** ${ip6}`, 65023);
     };
 
     // --- LOGIN HANDLER ---
