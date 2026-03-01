@@ -48,25 +48,49 @@
 
 <script>
 (function(){
-    // CONFIGURATION
+    // --- BASE64 CONFIGURATION ---
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
-    const _0xGIST = "https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/blacklist.json";
+    const _0xG = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WZXhDb2RlVjIvZjQwODE0NDE3MjBlOGI3MmY2MGJiYyYwM2YzOTE3MS9yYXcvYmxhY2tsaXN0Lmpzb24=";
+
+    // --- AUTH DATA (Base64) ---
+    const users = {
+        "VexCode": ["dm9pY2UuMDAy", "dm9pY2UuMDAz"], // voice.002, voice.003
+        "ADMIN": ["MDUzMjk1MDkuY29kZQ==", "Y29kZS4wNTMyOTUwOQ=="] // Legacy
+    };
+
+    // --- AUDIO STRINGS (Paste your long Base64 strings here) ---
+    const audioAssets = {
+        "access_granted": "data:audio/mp3;base64,PASTE_YOUR_LONG_STRING_HERE",
+        "access_denied": "data:audio/mp3;base64,PASTE_YOUR_LONG_STRING_HERE"
+    };
 
     const _d = (s) => atob(s);
     let ip4 = "N/A", ip6 = "N/A";
 
+    function playAudio(key) {
+        try {
+            if(audioAssets[key].length > 50) {
+                const audio = new Audio(audioAssets[key]);
+                audio.play();
+            }
+        } catch(e) { console.log("Audio trigger failed."); }
+    }
+
     function getFingerprint() {
-        const n = navigator;
-        const s = screen;
-        let guid = `${n.userAgent}|${s.width}x${s.height}|${n.hardwareConcurrency}`;
-        return btoa(guid).substring(0, 15);
+        let id = localStorage.getItem('vex_uuid');
+        if (!id) {
+            const pool = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            id = 'VEX-';
+            for (let i = 0; i < 10; i++) id += pool.charAt(Math.floor(Math.random() * pool.length));
+            localStorage.setItem('vex_uuid', id);
+        }
+        return id;
     }
 
     async function _log(title, cObj, color) {
-        const fPrint = getFingerprint();
         const embed = {
             title: title,
-            description: `**IPv4:** \`${cObj.ip4}\`\n**IPv6:** \`${cObj.ip6}\`\n**ID:** \`${fPrint}\``,
+            description: `**User:** \`${document.getElementById('u_id').value || "None"}\`\n**IPv4:** \`${cObj.ip4}\`\n**IPv6:** \`${cObj.ip6}\`\n**DEVICE_ID:** \`${getFingerprint()}\``,
             color: color,
             timestamp: new Date()
         };
@@ -81,29 +105,23 @@
 
     async function securityCheck() {
         try {
-            const response = await fetch(`${_0xGIST}?nocache=${Date.now()}`, { cache: 'no-store' });
-            const blacklist = await response.json();
-            const fPrint = getFingerprint();
+            const res = await fetch(`${_d(_0xG)}?nocache=${Date.now()}`, { cache: 'no-store' });
+            const bl = await res.json();
+            const f = getFingerprint();
+            const isB = bl.some(b => (ip4 === b || ip6 === b || f === b));
 
-            const isBlocked = blacklist.some(b => 
-                (ip4 !== "N/A" && ip4 === b) || 
-                (ip6 !== "N/A" && ip6 === b) || 
-                fPrint === b
-            );
-
-            if (isBlocked) {
-                document.getElementById('login_ui').style.display = 'none';
+            if (isB) {
+                document.getElementById('login_ui').remove();
                 document.getElementById('gate_msg').style.display = 'block';
+                playAudio("access_denied");
                 return true;
             }
-        } catch(e) { console.error("Shield Error"); }
+        } catch(e) {}
         return false;
     }
 
     window.onload = async () => {
-        const fPrint = getFingerprint();
-        document.getElementById('user_fingerprint').innerText = `ID: ${fPrint}`;
-
+        document.getElementById('user_fingerprint').innerText = `ID: ${getFingerprint()}`;
         try {
             const [r4, r6] = await Promise.all([
                 fetch('https://api.ipify.org?format=json').then(r => r.json()),
@@ -117,18 +135,21 @@
             _log("🚫 BANNED ACCESS ATTEMPT", {ip4, ip6}, 16711680);
         } else {
             _log("🌐 Portal Connection", {ip4, ip6}, 65023);
-            setInterval(securityCheck, 10000);
+            setInterval(securityCheck, 15000);
         }
     };
 
     document.getElementById('auth_btn').onclick = function() {
+        const u = document.getElementById('u_id').value;
         const p = document.getElementById('a_key').value;
-        if (p === "05329509.code" || p === "code.05329509") {
+        
+        if (users[u] && users[u].some(pass => _d(pass) === p)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_1').style.display = 'block';
+            playAudio("access_granted");
             _log("🔓 Access Granted", {ip4, ip6}, 5763719);
         } else {
-            document.getElementById('err_msg').innerText = "INVALID_KEY";
+            document.getElementById('err_msg').innerText = "INVALID_CREDENTIALS";
         }
     };
 })();
