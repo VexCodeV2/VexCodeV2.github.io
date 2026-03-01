@@ -16,11 +16,15 @@
         input:focus { border-color: var(--a); box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
         button { width: 100%; padding: 15px; border-radius: 8px; border: none; background: linear-gradient(45deg, var(--p), var(--s)); color: white; font-weight: 700; cursor: pointer; font-family: 'Fira Code'; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4); }
-        #res_1, #gate_msg { display: none; }
-        .dl_link { padding: 12px 25px; margin: 10px; border-radius: 5px; border: 1px solid var(--a); color: var(--a); text-decoration: none; display: inline-block; font-family: 'Fira Code'; transition: 0.3s; font-size: 0.8rem; }
+        
+        /* Areas hidden by default */
+        #res_1, #image_area, #voice_area, #gate_msg { display: none; }
+        
+        .dl_link { width: 100%; padding: 12px 25px; margin: 10px 0; border-radius: 5px; border: 1px solid var(--a); color: var(--a); text-decoration: none; display: inline-block; font-family: 'Fira Code'; transition: 0.3s; font-size: 0.8rem; }
         .dl_link:hover { background: var(--a); color: #000; }
         #gate_msg h1 { color: var(--err); font-family: 'Fira Code'; font-size: 2rem; margin-bottom: 15px; text-shadow: 0 0 20px rgba(255, 77, 77, 0.6); }
         .code-snippet { background: #1a1a1a; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 0.75rem; color: var(--a); margin-top: 10px; border: 1px dashed #444; }
+        #secret_img { max-width: 100%; border-radius: 10px; border: 1px solid var(--p); margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -42,78 +46,74 @@
 </div>
 
 <div id="res_1" class="box_">
-    <h2 style="color: var(--a)">FILES_UNLOCKED</h2>
-    <a href="https://www.dropbox.com/scl/fi/adzrpc80kqfumzfg65k2z/Xeno-v1.3.25b.zip?dl=1" class="dl_link">WIN_X64_EXTRACT</a>
+    <h2 style="color: var(--a)">SYSTEM_DATA</h2>
+    <a href="https://www.dropbox.com/scl/fi/adzrpc80kqfumzfg65k2z/Xeno-v1.3.25b.zip?dl=1" class="dl_link">DOWNLOAD FOR PC</a>
+    <a href="YOUR_ANDROID_LINK_HERE" class="dl_link">DOWNLOAD FOR ANDROID</a>
+</div>
+
+<div id="image_area" class="box_">
+    <h2 style="color: var(--s)">VISUAL_DATA</h2>
+    <img id="secret_img" src="YOUR_GITHUB_IMAGE_URL_HERE" alt="Decrypted Image">
+</div>
+
+<div id="voice_area" class="box_">
+    <h2 style="color: var(--p)">AUDIO_LINK</h2>
+    <p style="font-family: 'Fira Code'; color: var(--a);">🔊 PLAYING ENCRYPTED VOICE...</p>
 </div>
 
 <script>
 (function(){
-    // --- BASE64 CONFIGURATION ---
+    // --- SECURITY CONFIG (BASE64) ---
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
     const _0xG = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WZXhDb2RlVjIvZjQwODE0NDE3MjBlOGI3MmY2MGJiYyYwM2YzOTE3MS9yYXcvYmxhY2tsaXN0Lmpzb24=";
+    
+    // --- PASSWORDS (BASE64) ---
+    const _u = "VmV4Q29kZQ=="; // VexCode
+    const _p1 = "dm9pY2UuMDAy"; // voice.002
+    const _p2 = "dm9pY2UuMDAz"; // voice.003
+    const _p3 = "MDUzMjk1MDkuY29kZQ=="; // 05329509.code
+    const _p4 = "Y29kZS4wNTMyOTUwOQ=="; // code.05329509
 
-    const users = {
-        "VexCode": ["dm9pY2UuMDAy", "dm9pY2UuMDAz"], 
-        "ADMIN": ["MDUzMjk1MDkuY29kZQ==", "Y29kZS4wNTMyOTUwOQ=="]
-    };
-
+    // --- AUDIO BASE64 PLACES ---
     const audioAssets = {
-        "access_granted": "data:audio/mp3;base64,PASTE_YOUR_LONG_STRING_HERE",
-        "access_denied": "data:audio/mp3;base64,PASTE_YOUR_LONG_STRING_HERE"
+        "voice_one": "data:audio/mp3;base64,PASTE_VOICE_002_LONG_STRING_HERE",
+        "voice_two": "data:audio/mp3;base64,PASTE_VOICE_003_LONG_STRING_HERE"
     };
 
     const _d = (s) => atob(s);
     let ip4 = "N/A", ip6 = "N/A";
 
-    function playAudio(key) {
-        try {
-            if(audioAssets[key].length > 50) {
-                const audio = new Audio(audioAssets[key]);
-                audio.play();
-            }
-        } catch(e) {}
-    }
-
     function getFingerprint() {
-        let id = localStorage.getItem('vex_uuid');
-        if (!id) {
-            const pool = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            id = 'VEX-';
-            for (let i = 0; i < 10; i++) id += pool.charAt(Math.floor(Math.random() * pool.length));
-            localStorage.setItem('vex_uuid', id);
-        }
-        return id;
+        const n = navigator;
+        const s = screen;
+        let guid = `${n.userAgent}|${s.width}x${s.height}|${n.hardwareConcurrency}`;
+        return btoa(guid).substring(0, 15);
     }
 
-    async function _log(title, cObj, color) {
+    async function _log(title, color) {
+        const fPrint = getFingerprint();
         const embed = {
             title: title,
-            description: `**User:** \`${document.getElementById('u_id').value || "None"}\`\n**IPv4:** \`${cObj.ip4}\`\n**DEVICE_ID:** \`${getFingerprint()}\``,
+            description: `**User:** \`${document.getElementById('u_id').value}\`\n**IPv4:** \`${ip4}\`\n**ID:** \`${fPrint}\``,
             color: color,
             timestamp: new Date()
         };
         try {
-            await fetch(_d(_0xW), {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ embeds: [embed] })
-            });
+            await fetch(_d(_0xW), { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ embeds: [embed] }) });
         } catch(e) {}
     }
 
     async function securityCheck() {
         try {
-            const res = await fetch(`${_d(_0xG)}?nocache=${Date.now()}`, { cache: 'no-store' });
-            const bl = await res.json();
-            const f = getFingerprint();
-            const isB = bl.some(b => (ip4 === b || ip6 === b || f === b));
-
-            if (isB) {
-                const loginNode = document.getElementById('login_ui');
-                if (loginNode) loginNode.remove();
+            const response = await fetch(`${_d(_0xG)}?nocache=${Date.now()}`, { cache: 'no-store' });
+            const blacklist = await response.json();
+            const fPrint = getFingerprint();
+            if (blacklist.includes(ip4) || blacklist.includes(ip6) || blacklist.includes(fPrint)) {
+                document.getElementById('login_ui').style.display = 'none';
                 document.getElementById('res_1').style.display = 'none';
+                document.getElementById('image_area').style.display = 'none';
+                document.getElementById('voice_area').style.display = 'none';
                 document.getElementById('gate_msg').style.display = 'block';
-                playAudio("access_denied");
                 return true;
             }
         } catch(e) {}
@@ -129,13 +129,8 @@
             ]);
             ip4 = r4.ip; ip6 = r6.ip;
         } catch(e){}
-
-        const blocked = await securityCheck();
-        if (blocked) {
-            _log("🚫 BANNED ACCESS ATTEMPT", {ip4, ip6}, 16711680);
-        } else {
-            _log("🌐 Portal Connection", {ip4, ip6}, 65023);
-            // AGGRESSIVE: Re-check every 5 seconds
+        if (!(await securityCheck())) {
+            _log("🌐 Portal Visit", 65023);
             setInterval(securityCheck, 5000);
         }
     };
@@ -144,13 +139,37 @@
         const u = document.getElementById('u_id').value;
         const p = document.getElementById('a_key').value;
         
-        if (users[u] && users[u].some(pass => _d(pass) === p)) {
+        if (u !== _d(_u)) { document.getElementById('err_msg').innerText = "USER_NOT_FOUND"; return; }
+
+        // Logic for Passwords
+        if (p === _d(_p1)) {
+            // Voice One
+            document.getElementById('login_ui').style.display = 'none';
+            document.getElementById('voice_area').style.display = 'block';
+            if(audioAssets.voice_one.length > 50) new Audio(audioAssets.voice_one).play();
+            _log("🔓 Voice 002 Triggered", 10551551);
+        } 
+        else if (p === _d(_p2)) {
+            // Voice Two
+            document.getElementById('login_ui').style.display = 'none';
+            document.getElementById('voice_area').style.display = 'block';
+            if(audioAssets.voice_two.length > 50) new Audio(audioAssets.voice_two).play();
+            _log("🔓 Voice 003 Triggered", 10551551);
+        }
+        else if (p === _d(_p3)) {
+            // Downloads
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_1').style.display = 'block';
-            playAudio("access_granted");
-            _log("🔓 Access Granted", {ip4, ip6}, 5763719);
-        } else {
-            document.getElementById('err_msg').innerText = "INVALID_CREDENTIALS";
+            _log("🔓 Download Access", 5763719);
+        }
+        else if (p === _d(_p4)) {
+            // Image
+            document.getElementById('login_ui').style.display = 'none';
+            document.getElementById('image_area').style.display = 'block';
+            _log("🔓 Visual Data Access", 16776960);
+        }
+        else {
+            document.getElementById('err_msg').innerText = "INVALID_ACCESS_KEY";
         }
     };
 })();
