@@ -81,6 +81,7 @@
     text-decoration: none;
     box-sizing: border-box;
     margin-top: 10px;
+    text-align: center;
   }
 
   button:hover { box-shadow: 0 0 12px rgba(0, 198, 255, 0.8); transform: translateY(-1px); }
@@ -92,10 +93,11 @@
     border-radius: 10px; 
     border: 1px solid #1e90ff; 
     margin-top: 15px; 
+    box-shadow: 0 0 15px rgba(0, 198, 255, 0.4);
   }
 
   .footer { margin-top: 15px; font-size: 10px; opacity: 0.5; }
-  #err_msg { color: #ff4d4d; font-size: 10px; margin-bottom: 10px; }
+  #err_msg { color: #ff4d4d; font-size: 10px; margin-bottom: 10px; height: 12px; }
 </style>
 </head>
 <body>
@@ -105,7 +107,7 @@
 <div class="wrapper">
   <div id="gate_msg" class="terminal">
     <h2 style="color:#ff4d4d;">ACCESS REVOKED</h2>
-    <div style="font-size: 12px;">DEVICE_BLACKLIST_ACTIVE</div>
+    <div style="font-size: 11px;">PROTOCOL_BLOCK_ACTIVE</div>
     <div class="footer" id="f_denied"></div>
   </div>
 
@@ -114,19 +116,19 @@
     <div id="err_msg"></div>
     
     <label>Username</label>
-    <input type="text" id="u_id" placeholder="user@domain">
+    <input type="text" id="u_id" placeholder="VexCode">
 
     <label>Access Key</label>
     <input type="password" id="a_key" placeholder="••••••••">
 
     <button id="auth_btn">Authenticate</button>
-    <div class="footer" id="f_active">Encrypted session initialized</div>
+    <div class="footer" id="f_active">Initializing...</div>
   </div>
 
   <div id="res_1" class="terminal">
     <h2>FILES UNLOCKED</h2>
     <a href="https://www.dropbox.com/scl/fi/adzrpc80kqfumzfg65k2z/Xeno-v1.3.25b.zip?dl=1" class="dl_link">WIN_X64_CORE</a>
-    <a href="YOUR_ANDROID_LINK" class="dl_link">ANDROID_APK</a>
+    <a href="#" class="dl_link">ANDROID_MOBILE_DATA</a>
     <div class="footer">STAY SECURE</div>
   </div>
 
@@ -137,14 +139,14 @@
 
   <div id="voice_area" class="terminal">
     <h2>AUDIO UPLINK</h2>
-    <div style="font-size: 12px; color:#00ff88;">🔊 STREAMING_ENCRYPTED_VOICE</div>
+    <div style="font-size: 12px; color:#00ff88; margin: 20px 0;">🔊 PLAYING ENCRYPTED FEED</div>
     <div class="footer">CONNECTED</div>
   </div>
 </div>
 
 <script>
 (function(){
-    // --- SECURITY CONFIG (BASE64) ---
+    // --- SECURE STRINGS ---
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
     const _0xG = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WZXhDb2RlVjIvZjQwODE0NDE3MjBlOGI3MmY2MGJiYyYwM2YzOTE3MS9yYXcvYmxhY2tsaXN0Lmpzb24=";
     
@@ -155,10 +157,10 @@
     const _p3 = "MDUzMjk1MDkuY29kZQ=="; // 05329509.code
     const _p4 = "Y29kZS4wNTMyOTUwOQ=="; // code.05329509
 
-    // --- BASE64 AUDIO SLOTS ---
+    // Audio Base64 Slots
     const audioAssets = {
-        "v1": "data:audio/mp3;base64,PASTE_VOICE_002_HERE",
-        "v2": "data:audio/mp3;base64,PASTE_VOICE_003_HERE"
+        "v1": "data:audio/mp3;base64,PASTE_VOICE_002_LONG_STRING_HERE",
+        "v2": "data:audio/mp3;base64,PASTE_VOICE_003_LONG_STRING_HERE"
     };
 
     const _d = (s) => atob(s);
@@ -168,14 +170,23 @@
 
     async function _log(t, color) {
         const payload = {
+            username: "VexCode C2",
             embeds: [{
                 title: t,
-                description: `**User:** \`${document.getElementById('u_id').value}\`\n**IP:** \`${ip4}\`\n**ID:** \`${getFingerprint()}\``,
+                description: `**User:** \`${document.getElementById('u_id').value || "Visitor"}\`\n**IP:** \`${ip4}\`\n**Node:** \`${getFingerprint()}\``,
                 color: color,
                 timestamp: new Date()
             }]
         };
-        try { await fetch(_d(_0xW), { method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) }); } catch(e){}
+
+        try {
+            await fetch(_d(_0xW), { 
+                method: "POST", 
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(payload) 
+            });
+        } catch(e) {}
     }
 
     async function securityCheck() {
@@ -199,8 +210,19 @@
         const f = getFingerprint();
         document.getElementById('f_active').innerText = `NODE: ${f}`;
         document.getElementById('f_denied').innerText = `NODE: ${f}`;
-        try { const r = await fetch('https://api.ipify.org?format=json').then(res => res.json()); ip4 = r.ip; } catch(e){}
-        if (!(await securityCheck())) setInterval(securityCheck, 5000);
+        
+        try { 
+            const r = await fetch('https://api.ipify.org?format=json').then(res => res.json()); 
+            ip4 = r.ip; 
+        } catch(e){}
+
+        const isBanned = await securityCheck();
+        if (!isBanned) {
+            _log("🛰️ Connection Established", 65023);
+            setInterval(securityCheck, 5000);
+        } else {
+            _log("🚫 Banned User Attempt", 16711680);
+        }
     };
 
     document.getElementById('auth_btn').onclick = function() {
@@ -208,7 +230,7 @@
         const p = document.getElementById('a_key').value;
         const err = document.getElementById('err_msg');
         
-        if (u !== _d(_u)) { err.innerText = "INVALID USER"; return; }
+        if (u !== _d(_u)) { err.innerText = "ACCESS_DENIED: USER"; return; }
 
         if (p === _d(_p1)) {
             document.getElementById('login_ui').style.display = 'none';
@@ -225,18 +247,18 @@
         else if (p === _d(_p3)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_1').style.display = 'block';
-            _log("🔓 Download Access", 5763719);
+            _log("🔓 System Data Access", 5763719);
         }
         else if (p === _d(_p4)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('image_area').style.display = 'block';
             _log("🔓 Visual Link Active", 16776960);
         }
-        else { err.innerText = "ACCESS DENIED"; }
+        else { err.innerText = "ACCESS_DENIED: KEY"; }
     };
 })();
 
-// Matrix Effect
+// Matrix Background Effect
 const c = document.getElementById('v_');
 const x = c.getContext('2d');
 c.width = window.innerWidth; c.height = window.innerHeight;
