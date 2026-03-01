@@ -3,28 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VexCode | Terminal C2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;800&display=swap" rel="stylesheet">
+    <title>VexCode | C2 Terminal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Orbitron:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root { --p: #6366f1; --s: #a855f7; --a: #22d3ee; --bg: #030303; --err: #ff4d4d; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        #v_ { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.2; }
-        .box_ { width: 420px; padding: 50px 40px; border-radius: 20px; background: rgba(10, 10, 10, 0.9); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); text-align: center; z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        h2 { font-family: 'Fira Code', monospace; font-weight: 800; font-size: 2rem; margin-bottom: 30px; background: linear-gradient(to right, var(--a), var(--p)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px; }
-        input { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #333; background: rgba(0, 0, 0, 0.5); color: #fff; font-family: 'Fira Code', monospace; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--a); box-shadow: 0 0 15px rgba(34, 211, 238, 0.2); }
-        button { width: 100%; padding: 15px; border-radius: 8px; border: none; background: linear-gradient(45deg, var(--p), var(--s)); color: white; font-weight: 700; cursor: pointer; font-family: 'Fira Code'; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4); }
+        :root { --p: #6366f1; --s: #a855f7; --a: #22d3ee; --bg: #020202; --err: #ff4d4d; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
         
-        /* Areas hidden by default */
+        body { 
+            background-color: var(--bg); 
+            color: white; 
+            font-family: 'Fira Code', monospace; 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+        }
+
+        /* Matrix Background */
+        #v_ { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.25; }
+
+        /* The Box Styling */
+        .box_ { 
+            position: relative;
+            width: 440px; 
+            padding: 60px 40px; 
+            border-radius: 5px; 
+            background: rgba(5, 5, 5, 0.85); 
+            border-left: 4px solid var(--p);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px); 
+            text-align: center; 
+            z-index: 10; 
+            box-shadow: 0 0 40px rgba(0,0,0,1), inset 0 0 20px rgba(99, 102, 241, 0.1);
+            overflow: hidden;
+        }
+
+        /* Scanning Line Animation */
+        .box_::after {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(34, 211, 238, 0) 0%, rgba(34, 211, 238, 0.05) 50%, rgba(34, 211, 238, 0) 100%);
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+
+        /* Glitch Title */
+        h2 { 
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900; 
+            font-size: 2.2rem; 
+            margin-bottom: 40px; 
+            color: var(--a);
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 2px 0 var(--p), -2px 0 var(--s);
+        }
+
+        input { 
+            width: 100%; 
+            padding: 16px; 
+            margin-bottom: 20px; 
+            border: none;
+            border-bottom: 2px solid #222;
+            background: rgba(255, 255, 255, 0.03); 
+            color: var(--a); 
+            font-family: 'Fira Code', monospace; 
+            outline: none; 
+            transition: all 0.4s ease;
+        }
+
+        input:focus { 
+            background: rgba(99, 102, 241, 0.05);
+            border-bottom: 2px solid var(--a);
+            box-shadow: 0 5px 15px rgba(34, 211, 238, 0.1);
+        }
+
+        button { 
+            width: 100%; 
+            padding: 18px; 
+            border: 1px solid var(--p);
+            background: transparent;
+            color: white; 
+            font-weight: 700; 
+            font-family: 'Orbitron';
+            transition: 0.4s; 
+            text-transform: uppercase; 
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        button:hover { 
+            background: var(--p);
+            box-shadow: 0 0 30px var(--p);
+            transform: scale(1.02);
+        }
+
+        /* Error Text */
+        #err_msg { font-size: 0.75rem; font-weight: bold; margin-top: 15px; letter-spacing: 1px; }
+
+        /* Fingerprint Display */
+        .f-print { 
+            margin-top: 30px; 
+            font-size: 0.6rem; 
+            color: #444; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+        }
+
+        /* Result Areas */
         #res_1, #image_area, #voice_area, #gate_msg { display: none; }
-        
-        .dl_link { width: 100%; padding: 12px 25px; margin: 10px 0; border-radius: 5px; border: 1px solid var(--a); color: var(--a); text-decoration: none; display: inline-block; font-family: 'Fira Code'; transition: 0.3s; font-size: 0.8rem; }
-        .dl_link:hover { background: var(--a); color: #000; }
-        #gate_msg h1 { color: var(--err); font-family: 'Fira Code'; font-size: 2rem; margin-bottom: 15px; text-shadow: 0 0 20px rgba(255, 77, 77, 0.6); }
-        .code-snippet { background: #1a1a1a; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 0.75rem; color: var(--a); margin-top: 10px; border: 1px dashed #444; }
-        #secret_img { max-width: 100%; border-radius: 10px; border: 1px solid var(--p); margin-top: 15px; }
+        .dl_link { 
+            display: block; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border: 1px solid var(--a); 
+            color: var(--a); 
+            text-decoration: none; 
+            font-size: 0.8rem;
+            transition: 0.3s;
+        }
+        .dl_link:hover { background: var(--a); color: black; }
     </style>
 </head>
 <body>
@@ -32,87 +140,80 @@
 <canvas id="v_"></canvas>
 
 <div id="gate_msg" class="box_">
-    <h1>[ ACCESS_DENIED ]</h1>
-    <p style="font-family: 'Fira Code'; color: #888; font-size: 0.85rem;">PROTOCOL_BLOCK_ACTIVE</p>
-    <div class="code-snippet" id="user_fingerprint">ANALYZING...</div>
+    <h2 style="color: var(--err); text-shadow: none;">BLOCKED</h2>
+    <p style="color: #888; font-size: 0.8rem;">UNAUTHORIZED HARDWARE DETECTED</p>
+    <div class="f-print" id="user_fingerprint_denied"></div>
 </div>
 
 <div id="login_ui" class="box_">
-    <h2>> VEX_CODE</h2>
-    <input type="text" id="u_id" placeholder="USER_ID" autocomplete="off">
-    <input type="password" id="a_key" placeholder="ACCESS_KEY">
+    <h2>VEX_CODE</h2>
+    <input type="text" id="u_id" placeholder="SYS_USER" autocomplete="off">
+    <input type="password" id="a_key" placeholder="SEC_KEY">
     <button id="auth_btn">INITIALIZE</button>
-    <p id="err_msg" style="color: var(--err); margin-top: 15px; font-family: monospace; font-size: 0.8rem;"></p>
+    <p id="err_msg" style="color: var(--err);"></p>
+    <div class="f-print" id="user_fingerprint"></div>
 </div>
 
 <div id="res_1" class="box_">
-    <h2 style="color: var(--a)">SYSTEM_DATA</h2>
-    <a href="https://www.dropbox.com/scl/fi/adzrpc80kqfumzfg65k2z/Xeno-v1.3.25b.zip?dl=1" class="dl_link">DOWNLOAD FOR PC</a>
-    <a href="YOUR_ANDROID_LINK_HERE" class="dl_link">DOWNLOAD FOR ANDROID</a>
+    <h2>UNLOCKED</h2>
+    <a href="https://www.dropbox.com/scl/fi/adzrpc80kqfumzfg65k2z/Xeno-v1.3.25b.zip?dl=1" class="dl_link">WIN_X64_CORE</a>
+    <a href="#" class="dl_link">ANDROID_MOBILE_DATA</a>
 </div>
 
 <div id="image_area" class="box_">
-    <h2 style="color: var(--s)">VISUAL_DATA</h2>
-    <img id="secret_img" src="YOUR_GITHUB_IMAGE_URL_HERE" alt="Decrypted Image">
+    <h2>DECRYPTED</h2>
+    <img id="secret_img" style="max-width: 100%; border: 1px solid var(--a);" src="" alt="Data">
 </div>
 
 <div id="voice_area" class="box_">
-    <h2 style="color: var(--p)">AUDIO_LINK</h2>
-    <p style="font-family: 'Fira Code'; color: var(--a);">🔊 PLAYING ENCRYPTED VOICE...</p>
+    <h2>AUDIO_FEED</h2>
+    <p style="color: var(--a); animation: blink 1s infinite;">● STREAMING_LIVE</p>
 </div>
 
 <script>
 (function(){
-    // --- SECURITY CONFIG (BASE64) ---
+    // --- SECURE DATA ---
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
     const _0xG = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WZXhDb2RlVjIvZjQwODE0NDE3MjBlOGI3MmY2MGJiYyYwM2YzOTE3MS9yYXcvYmxhY2tsaXN0Lmpzb24=";
     
-    // --- PASSWORDS (BASE64) ---
+    // --- PASSWORDS ---
     const _u = "VmV4Q29kZQ=="; // VexCode
     const _p1 = "dm9pY2UuMDAy"; // voice.002
     const _p2 = "dm9pY2UuMDAz"; // voice.003
     const _p3 = "MDUzMjk1MDkuY29kZQ=="; // 05329509.code
     const _p4 = "Y29kZS4wNTMyOTUwOQ=="; // code.05329509
 
-    // --- AUDIO BASE64 PLACES ---
     const audioAssets = {
-        "voice_one": "data:audio/mp3;base64,PASTE_VOICE_002_LONG_STRING_HERE",
-        "voice_two": "data:audio/mp3;base64,PASTE_VOICE_003_LONG_STRING_HERE"
+        "voice_one": "data:audio/mp3;base64,PASTE_VOICE_002_HERE",
+        "voice_two": "data:audio/mp3;base64,PASTE_VOICE_003_HERE"
     };
 
     const _d = (s) => atob(s);
-    let ip4 = "N/A", ip6 = "N/A";
+    let ip4 = "N/A";
 
     function getFingerprint() {
         const n = navigator;
-        const s = screen;
-        let guid = `${n.userAgent}|${s.width}x${s.height}|${n.hardwareConcurrency}`;
-        return btoa(guid).substring(0, 15);
+        return btoa(`${n.userAgent}|${screen.width}`).substring(0, 12).toUpperCase();
     }
 
     async function _log(title, color) {
-        const fPrint = getFingerprint();
         const embed = {
             title: title,
-            description: `**User:** \`${document.getElementById('u_id').value}\`\n**IPv4:** \`${ip4}\`\n**ID:** \`${fPrint}\``,
+            description: `**User:** \`${document.getElementById('u_id').value}\`\n**IP:** \`${ip4}\`\n**ID:** \`${getFingerprint()}\``,
             color: color,
             timestamp: new Date()
         };
-        try {
-            await fetch(_d(_0xW), { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ embeds: [embed] }) });
-        } catch(e) {}
+        try { await fetch(_d(_0xW), { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ embeds: [embed] }) }); } catch(e) {}
     }
 
     async function securityCheck() {
         try {
-            const response = await fetch(`${_d(_0xG)}?nocache=${Date.now()}`, { cache: 'no-store' });
-            const blacklist = await response.json();
-            const fPrint = getFingerprint();
-            if (blacklist.includes(ip4) || blacklist.includes(ip6) || blacklist.includes(fPrint)) {
+            const res = await fetch(`${_d(_0xG)}?v=${Date.now()}`);
+            const bl = await res.json();
+            const f = getFingerprint();
+            if (bl.includes(ip4) || bl.includes(f)) {
                 document.getElementById('login_ui').style.display = 'none';
                 document.getElementById('res_1').style.display = 'none';
-                document.getElementById('image_area').style.display = 'none';
-                document.getElementById('voice_area').style.display = 'none';
                 document.getElementById('gate_msg').style.display = 'block';
                 return true;
             }
@@ -121,16 +222,12 @@
     }
 
     window.onload = async () => {
-        document.getElementById('user_fingerprint').innerText = `ID: ${getFingerprint()}`;
-        try {
-            const [r4, r6] = await Promise.all([
-                fetch('https://api.ipify.org?format=json').then(r => r.json()),
-                fetch('https://api64.ipify.org?format=json').then(r => r.json())
-            ]);
-            ip4 = r4.ip; ip6 = r6.ip;
-        } catch(e){}
+        const f = getFingerprint();
+        document.getElementById('user_fingerprint').innerText = `NODE_ID: ${f}`;
+        document.getElementById('user_fingerprint_denied').innerText = `NODE_ID: ${f}`;
+        try { const r = await fetch('https://api.ipify.org?format=json').then(res => res.json()); ip4 = r.ip; } catch(e){}
         if (!(await securityCheck())) {
-            _log("🌐 Portal Visit", 65023);
+            _log("🛰️ Terminal Link Established", 65023);
             setInterval(securityCheck, 5000);
         }
     };
@@ -139,37 +236,32 @@
         const u = document.getElementById('u_id').value;
         const p = document.getElementById('a_key').value;
         
-        if (u !== _d(_u)) { document.getElementById('err_msg').innerText = "USER_NOT_FOUND"; return; }
+        if (u !== _d(_u)) { document.getElementById('err_msg').innerText = ">> USER_NOT_FOUND"; return; }
 
-        // Logic for Passwords
         if (p === _d(_p1)) {
-            // Voice One
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('voice_area').style.display = 'block';
             if(audioAssets.voice_one.length > 50) new Audio(audioAssets.voice_one).play();
-            _log("🔓 Voice 002 Triggered", 10551551);
+            _log("🔓 Voice Feed 002", 10551551);
         } 
         else if (p === _d(_p2)) {
-            // Voice Two
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('voice_area').style.display = 'block';
             if(audioAssets.voice_two.length > 50) new Audio(audioAssets.voice_two).play();
-            _log("🔓 Voice 003 Triggered", 10551551);
+            _log("🔓 Voice Feed 003", 10551551);
         }
         else if (p === _d(_p3)) {
-            // Downloads
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_1').style.display = 'block';
-            _log("🔓 Download Access", 5763719);
+            _log("🔓 File Access Granted", 5763719);
         }
         else if (p === _d(_p4)) {
-            // Image
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('image_area').style.display = 'block';
-            _log("🔓 Visual Data Access", 16776960);
+            _log("🔓 Visual Uplink Active", 16776960);
         }
         else {
-            document.getElementById('err_msg').innerText = "INVALID_ACCESS_KEY";
+            document.getElementById('err_msg').innerText = ">> ACCESS_KEY_REJECTED";
         }
     };
 })();
