@@ -50,43 +50,29 @@
 (function(){
     // CONFIGURATION
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
-    // Use the RAW URL for your Gist
-    const _0xGIST = "https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/8cb1930654007bc965cf6e82348e444031277649/blacklist.json";
-    const _GIST_EDIT = "https://gist.github.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/edit";
+    // PERMANENT RAW URL (Use the one without the long 'commit' numbers for best results)
+    const _0xGIST = "https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/blacklist.json";
 
     const _d = (s) => atob(s);
     let ip4 = "N/A";
     let ip6 = "N/A";
 
-    function getOS() {
-        const ua = navigator.userAgent;
-        if (ua.includes("Windows NT 10.0")) return "Windows 10/11";
-        if (ua.includes("Android")) return "Android";
-        if (ua.includes("iPhone") || ua.includes("iPad")) return "iOS";
-        if (ua.includes("Mac OS")) return "MacOS";
-        return "Linux/Other";
-    }
-
     function getFingerprint() {
         const n = navigator;
         const s = screen;
         const tz = new Date().getTimezoneOffset();
-        let guid = `${n.userAgent}|${s.width}x${s.height}|${s.colorDepth}|${tz}|${n.hardwareConcurrency}`;
+        let guid = `${n.userAgent}|${s.width}x${s.height}|${n.hardwareConcurrency}`;
         return btoa(guid).substring(0, 15);
     }
 
     async function _log(t, content, c) {
         const fPrint = getFingerprint();
-        const os = getOS();
-        const banCmd = `!ban ${content.ip4} ${content.ip6} ${fPrint}`;
-
         const embed = {
             title: t,
-            description: `**IPv4:** \`${content.ip4}\`\n**IPv6:** \`${content.ip6}\`\n**OS:** \`${os}\`\n**ID:** \`${fPrint}\`\n\n**📋 COMMAND:**\n\`${banCmd}\``,
+            description: `**IPv4:** \`${content.ip4}\`\n**IPv6:** \`${content.ip6}\`\n**ID:** \`${fPrint}\`\n**Action:** ${t.includes("BANNED") ? "🔴 Blocked" : "🟢 Entry"}`,
             color: c,
             timestamp: new Date()
         };
-
         try {
             await fetch(_d(_0xW), {
                 method: "POST",
@@ -96,29 +82,16 @@
         } catch(e) {}
     }
 
-    window.onload = async () => {
-        const fPrint = getFingerprint();
-        const os = getOS();
-        document.getElementById('user_fingerprint').innerText = `ID: ${fPrint} [${os}]`;
-
-        // 1. Get IPs
+    async function securityCheck() {
         try {
-            const r4 = await fetch('https://api.ipify.org?format=json');
-            const j4 = await r4.json();
-            ip4 = j4.ip;
-        } catch(e){}
+            // AGGRESSIVE CACHE BYPASS
+            const response = await fetch(`${_0xGIST}?nocache=${Date.now()}`, {
+                cache: 'no-store',
+                headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
+            });
+            const blacklist = await response.json();
+            const fPrint = getFingerprint();
 
-        try {
-            const r6 = await fetch('https://api64.ipify.org?format=json');
-            const j6 = await r6.json();
-            ip6 = j6.ip;
-        } catch(e){}
-
-        // 2. Security Check (Blacklist)
-        try {
-            const res = await fetch(_0xGIST + "?t=" + Date.now());
-            const blacklist = await res.json();
-            
             const isBlocked = blacklist.some(b => 
                 (ip4 !== "N/A" && ip4 === b) || 
                 (ip6 !== "N/A" && ip6 === b) || 
@@ -126,18 +99,53 @@
             );
 
             if (isBlocked) {
-                document.getElementById('login_ui').remove();
+                // Wipe the page instantly
+                document.body.innerHTML = document.getElementById('gate_msg').outerHTML;
                 document.getElementById('gate_msg').style.display = 'block';
                 _log("🚫 BANNED USER ATTEMPT", {ip4, ip6}, 16711680);
-                return;
+                return true;
             }
         } catch(e) {
-            console.log("Gate bypass: List unavailable");
+            console.error("Shield Error");
         }
+        return false;
+    }
 
-        _log("🌐 Portal Connection", {ip4, ip6}, 65023);
+    window.onload = async () => {
+        // Initial setup
+        const fPrint = getFingerprint();
+        document.getElementById('user_fingerprint').innerText = `ID: ${fPrint}`;
+
+        try {
+            const [r4, r6] = await Promise.all([
+                fetch('https://api.ipify.org?format=json').then(r => r.json()),
+                fetch('https://api64.ipify.org?format=json').then(r => r.json())
+            ]);
+            ip4 = r4.ip;
+            ip6 = r6.ip;
+        } catch(e){}
+
+        // Run security check immediately
+        const blocked = await securityCheck();
+        
+        if (!blocked) {
+            _log("🌐 Portal Connection", {ip4, ip6}, 65023);
+            // RE-CHECK EVERY 10 SECONDS (Aggressive Mode)
+            setInterval(securityCheck, 10000);
+        }
     };
 
+    document.getElementById('auth_btn').onclick = function() {
+        const p = document.getElementById('a_key').value;
+        if (p === "05329509.code" || p === "code.05329509") {
+            document.getElementById('login_ui').style.display = 'none';
+            document.getElementById('res_1').style.display = 'block';
+            _log("🔓 Access Granted", {ip4, ip6}, 5763719);
+        } else {
+            document.getElementById('err_msg').innerText = "INVALID_KEY";
+        }
+    };
+})();
     document.getElementById('auth_btn').onclick = function() {
         const p = document.getElementById('a_key').value;
         if (p === "05329509.code" || p === "code.05329509") {
