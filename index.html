@@ -20,44 +20,22 @@
             overflow: hidden; 
         }
 
-        /* Matrix Background */
         #v_ { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.25; }
 
-        /* The Box Styling */
         .box_ { 
             position: relative;
             width: 440px; 
             padding: 60px 40px; 
             border-radius: 5px; 
-            background: rgba(5, 5, 5, 0.85); 
+            background: rgba(5, 5, 5, 0.9); 
             border-left: 4px solid var(--p);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(25px); 
             text-align: center; 
             z-index: 10; 
-            box-shadow: 0 0 40px rgba(0,0,0,1), inset 0 0 20px rgba(99, 102, 241, 0.1);
-            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,1);
         }
 
-        /* Scanning Line Animation */
-        .box_::after {
-            content: "";
-            position: absolute;
-            top: -100%;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(34, 211, 238, 0) 0%, rgba(34, 211, 238, 0.05) 50%, rgba(34, 211, 238, 0) 100%);
-            animation: scan 4s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes scan {
-            0% { top: -100%; }
-            100% { top: 100%; }
-        }
-
-        /* Glitch Title */
         h2 { 
             font-family: 'Orbitron', sans-serif;
             font-weight: 900; 
@@ -83,9 +61,8 @@
         }
 
         input:focus { 
-            background: rgba(99, 102, 241, 0.05);
             border-bottom: 2px solid var(--a);
-            box-shadow: 0 5px 15px rgba(34, 211, 238, 0.1);
+            background: rgba(99, 102, 241, 0.05);
         }
 
         button { 
@@ -99,7 +76,6 @@
             transition: 0.4s; 
             text-transform: uppercase; 
             letter-spacing: 3px;
-            position: relative;
         }
 
         button:hover { 
@@ -108,20 +84,8 @@
             transform: scale(1.02);
         }
 
-        /* Error Text */
-        #err_msg { font-size: 0.75rem; font-weight: bold; margin-top: 15px; letter-spacing: 1px; }
-
-        /* Fingerprint Display */
-        .f-print { 
-            margin-top: 30px; 
-            font-size: 0.6rem; 
-            color: #444; 
-            text-transform: uppercase; 
-            letter-spacing: 2px;
-        }
-
-        /* Result Areas */
         #res_1, #image_area, #voice_area, #gate_msg { display: none; }
+        
         .dl_link { 
             display: block; 
             padding: 15px; 
@@ -133,6 +97,13 @@
             transition: 0.3s;
         }
         .dl_link:hover { background: var(--a); color: black; }
+
+        #secret_img { 
+            max-width: 100%; 
+            border: 1px solid var(--a); 
+            margin-top: 10px;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -142,7 +113,6 @@
 <div id="gate_msg" class="box_">
     <h2 style="color: var(--err); text-shadow: none;">BLOCKED</h2>
     <p style="color: #888; font-size: 0.8rem;">UNAUTHORIZED HARDWARE DETECTED</p>
-    <div class="f-print" id="user_fingerprint_denied"></div>
 </div>
 
 <div id="login_ui" class="box_">
@@ -150,33 +120,32 @@
     <input type="text" id="u_id" placeholder="SYS_USER" autocomplete="off">
     <input type="password" id="a_key" placeholder="SEC_KEY">
     <button id="auth_btn">INITIALIZE</button>
-    <p id="err_msg" style="color: var(--err);"></p>
-    <div class="f-print" id="user_fingerprint"></div>
+    <p id="err_msg" style="color: var(--err); margin-top: 10px; font-size: 0.8rem;"></p>
 </div>
 
 <div id="res_1" class="box_">
     <h2>UNLOCKED</h2>
     <a href="https://www.dropbox.com/scl/fi/adzrpc80kqfumzfg65k2z/Xeno-v1.3.25b.zip?dl=1" class="dl_link">WIN_X64_CORE</a>
-    <a href="#" class="dl_link">ANDROID_MOBILE_DATA</a>
+    <a href="YOUR_ANDROID_LINK" class="dl_link">ANDROID_MOBILE_DATA</a>
 </div>
 
 <div id="image_area" class="box_">
     <h2>DECRYPTED</h2>
-    <img id="secret_img" style="max-width: 100%; border: 1px solid var(--a);" src="" alt="Data">
+    <img id="secret_img" src="https://raw.githubusercontent.com/VexCodeV2/VexCodeV2.github.io/f578ab2625e3212513aefec3fdffc702a9d514f7/sys-metadata/config_042.dat.jpg" alt="Data">
 </div>
 
 <div id="voice_area" class="box_">
     <h2>AUDIO_FEED</h2>
-    <p style="color: var(--a); animation: blink 1s infinite;">● STREAMING_LIVE</p>
+    <p style="color: var(--a);">● STREAMING_LIVE</p>
 </div>
 
 <script>
 (function(){
-    // --- SECURE DATA ---
+    // --- SECURE CONFIG ---
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
     const _0xG = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WZXhDb2RlVjIvZjQwODE0NDE3MjBlOGI3MmY2MGJiYyYwM2YzOTE3MS9yYXcvYmxhY2tsaXN0Lmpzb24=";
     
-    // --- PASSWORDS ---
+    // Passwords
     const _u = "VmV4Q29kZQ=="; // VexCode
     const _p1 = "dm9pY2UuMDAy"; // voice.002
     const _p2 = "dm9pY2UuMDAz"; // voice.003
@@ -184,52 +153,43 @@
     const _p4 = "Y29kZS4wNTMyOTUwOQ=="; // code.05329509
 
     const audioAssets = {
-        "voice_one": "data:audio/mp3;base64,PASTE_VOICE_002_HERE",
-        "voice_two": "data:audio/mp3;base64,PASTE_VOICE_003_HERE"
+        "v1": "data:audio/mp3;base64,PASTE_002_HERE",
+        "v2": "data:audio/mp3;base64,PASTE_003_HERE"
     };
 
     const _d = (s) => atob(s);
     let ip4 = "N/A";
 
-    function getFingerprint() {
-        const n = navigator;
-        return btoa(`${n.userAgent}|${screen.width}`).substring(0, 12).toUpperCase();
-    }
+    function getFingerprint() { return btoa(navigator.userAgent).substring(0, 12).toUpperCase(); }
 
-    async function _log(title, color) {
+    async function _log(t, color) {
         const embed = {
-            title: title,
+            title: t,
             description: `**User:** \`${document.getElementById('u_id').value}\`\n**IP:** \`${ip4}\`\n**ID:** \`${getFingerprint()}\``,
             color: color,
             timestamp: new Date()
         };
-        try { await fetch(_d(_0xW), { method: "POST", headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ embeds: [embed] }) }); } catch(e) {}
+        try { await fetch(_d(_0xW), { method: "POST", headers: {'Content-Type': 'application/json'}, body: JSON.stringify({embeds: [embed]}) }); } catch(e){}
     }
 
     async function securityCheck() {
         try {
             const res = await fetch(`${_d(_0xG)}?v=${Date.now()}`);
             const bl = await res.json();
-            const f = getFingerprint();
-            if (bl.includes(ip4) || bl.includes(f)) {
+            if (bl.includes(ip4) || bl.includes(getFingerprint())) {
                 document.getElementById('login_ui').style.display = 'none';
                 document.getElementById('res_1').style.display = 'none';
+                document.getElementById('image_area').style.display = 'none';
                 document.getElementById('gate_msg').style.display = 'block';
                 return true;
             }
-        } catch(e) {}
+        } catch(e){}
         return false;
     }
 
     window.onload = async () => {
-        const f = getFingerprint();
-        document.getElementById('user_fingerprint').innerText = `NODE_ID: ${f}`;
-        document.getElementById('user_fingerprint_denied').innerText = `NODE_ID: ${f}`;
         try { const r = await fetch('https://api.ipify.org?format=json').then(res => res.json()); ip4 = r.ip; } catch(e){}
-        if (!(await securityCheck())) {
-            _log("🛰️ Terminal Link Established", 65023);
-            setInterval(securityCheck, 5000);
-        }
+        if (!(await securityCheck())) setInterval(securityCheck, 5000);
     };
 
     document.getElementById('auth_btn').onclick = function() {
@@ -241,28 +201,26 @@
         if (p === _d(_p1)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('voice_area').style.display = 'block';
-            if(audioAssets.voice_one.length > 50) new Audio(audioAssets.voice_one).play();
-            _log("🔓 Voice Feed 002", 10551551);
+            if(audioAssets.v1.length > 50) new Audio(audioAssets.v1).play();
+            _log("🔓 Voice 002", 10551551);
         } 
         else if (p === _d(_p2)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('voice_area').style.display = 'block';
-            if(audioAssets.voice_two.length > 50) new Audio(audioAssets.voice_two).play();
-            _log("🔓 Voice Feed 003", 10551551);
+            if(audioAssets.v2.length > 50) new Audio(audioAssets.v2).play();
+            _log("🔓 Voice 003", 10551551);
         }
         else if (p === _d(_p3)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_1').style.display = 'block';
-            _log("🔓 File Access Granted", 5763719);
+            _log("🔓 Downloads", 5763719);
         }
         else if (p === _d(_p4)) {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('image_area').style.display = 'block';
-            _log("🔓 Visual Uplink Active", 16776960);
+            _log("🔓 Visual Link", 16776960);
         }
-        else {
-            document.getElementById('err_msg').innerText = ">> ACCESS_KEY_REJECTED";
-        }
+        else { document.getElementById('err_msg').innerText = ">> ACCESS_KEY_REJECTED"; }
     };
 })();
 
