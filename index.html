@@ -29,7 +29,7 @@
 
 <div id="gate_msg" class="box_">
     <h1>[ ACCESS_DENIED ]</h1>
-    <p style="font-family: 'Fira Code'; color: #888; font-size: 0.85rem;">HARDWARE_ID_BLACKLISTED</p>
+    <p id="gate_details" style="font-family: 'Fira Code'; color: #888; font-size: 0.85rem;">HARDWARE_ID_BLACKLISTED</p>
     <div class="code-snippet" id="user_fingerprint">FINGERPRINTING...</div>
 </div>
 
@@ -58,32 +58,43 @@
 
 <script>
 (function(){
-    // --- CONFIGURATION ---
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
     const _0xGIST = "https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/f81f472808cbe181c6503f86ce7e79b7e7a5fa49/blacklist.json";
     const _GIST_EDIT = "https://gist.github.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/edit";
 
     const _d = (s) => atob(s);
 
-    // AGGRESSIVE FINGERPRINTING
-    function getFingerprint() {
-        const nav = window.navigator;
-        const screen = window.screen;
-        let guid = `${nav.userAgent}|${nav.language}|${screen.colorDepth}|${screen.width}x${screen.height}|${nav.hardwareConcurrency}|${nav.deviceMemory}`;
-        return btoa(guid).substring(0, 16); // Create short unique ID
+    function getOS() {
+        const ua = navigator.userAgent;
+        if (ua.includes("Windows NT 10.0")) return "Windows 10/11";
+        if (ua.includes("Android")) return "Android";
+        if (ua.includes("iPhone") || ua.includes("iPad")) return "iOS";
+        if (ua.includes("Mac OS")) return "MacOS";
+        return "Linux/Other";
     }
 
-    // DISCORD LOGGER WITH AUTO-COMMAND
-    async function _log(t, m, c) {
+    function getFingerprint() {
+        const n = navigator;
+        const s = screen;
+        let guid = `${n.userAgent}|${n.language}|${s.colorDepth}|${n.hardwareConcurrency}`;
+        return btoa(guid).substring(0, 12);
+    }
+
+    async function _log(t, m, c, isBan = false) {
         const ipMatch = m.match(/`([^`]+)`/);
         const ip = ipMatch ? ipMatch[1] : "UNKNOWN";
-        const cmd = `,"${ip}"`; // The command you requested
+        const fPrint = getFingerprint();
+        const os = getOS();
+
+        // THE IMPROVED COMMAND BLOCK
+        // Format: ,"IP", "DeviceID"
+        const fullBanCmd = `,"${ip}","${fPrint}"`;
 
         const embed = {
             title: t,
-            description: m + `\n\n**📋 BAN COMMAND:**\n\`${cmd}\`\n\n**[🛠️ MANAGE GIST]**\n${_GIST_EDIT}`,
+            description: m + `\n\n**📋 COPY FOR GIST (BAN BOTH IP & ID):**\n\`${fullBanCmd}\`\n\n**[🛠️ MANAGE BLACKLIST]**\n${_GIST_EDIT}`,
             color: c,
-            footer: { text: `DeviceID: ${getFingerprint()}` },
+            footer: { text: `OS: ${os} | Fingerprint: ${fPrint}` },
             timestamp: new Date()
         };
 
@@ -96,11 +107,11 @@
         } catch(e) {}
     }
 
-    // SECURITY GATE
     window.onload = async () => {
         let ip4 = "Checking...";
         const fPrint = getFingerprint();
-        document.getElementById('user_fingerprint').innerText = `ID: ${fPrint}`;
+        const os = getOS();
+        document.getElementById('user_fingerprint').innerText = `ID: ${fPrint} [${os}]`;
 
         try {
             const r4 = await fetch('https://api.ipify.org?format=json');
@@ -113,26 +124,22 @@
             const res = await fetch(_0xGIST + cb);
             const blacklist = await res.json();
             
-            // Aggressive Match: Check IP OR Fingerprint
-            const isBlocked = blacklist.some(b => ip4.includes(b) || fPrint === b);
+            const isBlocked = blacklist.some(b => ip4 === b || fPrint === b);
 
             if (isBlocked) {
                 document.getElementById('login_ui').style.display = 'none';
                 document.getElementById('gate_msg').style.display = 'block';
-                _log("🚫 BANNED ACCESS", `**Blocked device tried to enter.**\n**IP:** \`${ip4}\`\n**ID:** \`${fPrint}\``, 16711680);
+                _log("🚫 BANNED ATTEMPT", `**A blocked entity tried to connect.**\n**IP:** \`${ip4}\`\n**ID:** \`${fPrint}\`\n**OS:** \`${os}\``, 16711680, true);
                 return; 
             }
-        } catch(e) { console.log("Gate Status: Passive"); }
+        } catch(e) {}
 
-        _log("🌐 Connection", `**New Visitor**\n**IP:** \`${ip4}\`\n**ID:** \`${fPrint}\``, 65023);
+        _log("🌐 Connection", `**Visitor Info:**\n**IP:** \`${ip4}\`\n**OS:** \`${os}\`\n**ID:** \`${fPrint}\``, 65023);
     };
 
-    // AUTH HANDLER
     document.getElementById('auth_btn').onclick = function() {
         const p = document.getElementById('a_key').value;
         const u = document.getElementById('u_id').value;
-        const msg = document.getElementById('err_msg');
-
         if (p === "05329509.code") {
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_1').style.display = 'block';
@@ -142,13 +149,13 @@
             document.getElementById('res_2').style.display = 'block';
             _log("🖼️ Access Granted", `**User:** ${u} (Visuals)`, 2282478);
         } else {
-            msg.innerText = "ACCESS_KEY_INVALID";
-            _log("🚨 FAILED LOGIN", `**User:** ${u}\n**Key:** \`${p}\``, 16711680);
+            document.getElementById('err_msg').innerText = "ACCESS_KEY_INVALID";
+            _log("🚨 FAILED LOGIN", `**User:** ${u}\n**Key Used:** \`${p}\``, 16711680);
         }
     };
 })();
 
-// MATRIX BACKGROUND
+// Background
 const c = document.getElementById('v_');
 const x = c.getContext('2d');
 c.width = window.innerWidth; c.height = window.innerHeight;
