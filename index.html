@@ -68,11 +68,24 @@
         return "Unknown OS/Mobile";
     }
 
-    function getFingerprint() {
-        const n = navigator;
-        const s = screen;
-        let guid = `${n.userAgent}|${s.width}x${s.height}|${n.hardwareConcurrency}`;
-        return btoa(guid).substring(0, 15);
+   function getFingerprint() {
+    // 1. Check if the device already has a unique ID stored
+    let uniqueID = localStorage.getItem('vex_uuid');
+
+    // 2. If no ID exists, create a new aggressive one
+    if (!uniqueID) {
+        const randomPool = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        let newID = 'VEX-';
+        for (let i = 0; i < 12; i++) {
+            newID += randomPool.charAt(Math.floor(Math.random() * randomPool.length));
+        }
+        // Save it permanently in the browser
+        localStorage.setItem('vex_uuid', newID);
+        uniqueID = newID;
+    }
+
+    return uniqueID;
+}
     }
 
     async function _log(title, cObj, color) {
