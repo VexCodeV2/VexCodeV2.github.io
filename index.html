@@ -52,13 +52,11 @@
     const _0xW = "aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTQ3NzU2ODE2NjY4MTkwMzE2Ni9QSmxGNjFDbHp4cVhWZjY1dzZqdFplVUhVUGV3OFZrN2g0VEhmcF9kcmlyMFJFRUpxcU5nWXMyMkhyVjhpVlpLbG9tVg==";
     const _0xG = "aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9WZXhDb2RlVjIvZjQwODE0NDE3MjBlOGI3MmY2MGJiYyYwM2YzOTE3MS9yYXcvYmxhY2tsaXN0Lmpzb24=";
 
-    // --- AUTH DATA (Base64) ---
     const users = {
-        "VexCode": ["dm9pY2UuMDAy", "dm9pY2UuMDAz"], // voice.002, voice.003
-        "ADMIN": ["MDUzMjk1MDkuY29kZQ==", "Y29kZS4wNTMyOTUwOQ=="] // Legacy
+        "VexCode": ["dm9pY2UuMDAy", "dm9pY2UuMDAz"], 
+        "ADMIN": ["MDUzMjk1MDkuY29kZQ==", "Y29kZS4wNTMyOTUwOQ=="]
     };
 
-    // --- AUDIO STRINGS (Paste your long Base64 strings here) ---
     const audioAssets = {
         "access_granted": "data:audio/mp3;base64,PASTE_YOUR_LONG_STRING_HERE",
         "access_denied": "data:audio/mp3;base64,PASTE_YOUR_LONG_STRING_HERE"
@@ -73,7 +71,7 @@
                 const audio = new Audio(audioAssets[key]);
                 audio.play();
             }
-        } catch(e) { console.log("Audio trigger failed."); }
+        } catch(e) {}
     }
 
     function getFingerprint() {
@@ -90,7 +88,7 @@
     async function _log(title, cObj, color) {
         const embed = {
             title: title,
-            description: `**User:** \`${document.getElementById('u_id').value || "None"}\`\n**IPv4:** \`${cObj.ip4}\`\n**IPv6:** \`${cObj.ip6}\`\n**DEVICE_ID:** \`${getFingerprint()}\``,
+            description: `**User:** \`${document.getElementById('u_id').value || "None"}\`\n**IPv4:** \`${cObj.ip4}\`\n**DEVICE_ID:** \`${getFingerprint()}\``,
             color: color,
             timestamp: new Date()
         };
@@ -111,7 +109,9 @@
             const isB = bl.some(b => (ip4 === b || ip6 === b || f === b));
 
             if (isB) {
-                document.getElementById('login_ui').remove();
+                const loginNode = document.getElementById('login_ui');
+                if (loginNode) loginNode.remove();
+                document.getElementById('res_1').style.display = 'none';
                 document.getElementById('gate_msg').style.display = 'block';
                 playAudio("access_denied");
                 return true;
@@ -135,7 +135,8 @@
             _log("🚫 BANNED ACCESS ATTEMPT", {ip4, ip6}, 16711680);
         } else {
             _log("🌐 Portal Connection", {ip4, ip6}, 65023);
-            setInterval(securityCheck, 15000);
+            // AGGRESSIVE: Re-check every 5 seconds
+            setInterval(securityCheck, 5000);
         }
     };
 
