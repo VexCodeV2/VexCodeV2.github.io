@@ -3,95 +3,188 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VexCode</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<title>VexCode | Terminal</title>
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@400;800&display=swap" rel="stylesheet">
 <style>
-/* ... (Your existing CSS styles remain exactly the same) ... */
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-body { background: radial-gradient(circle at center, #050505 0%, #000000 70%); color: white; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-@keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-@keyframes borderGlow { 0% { box-shadow: 0 0 15px #6366f1; } 50% { box-shadow: 0 0 35px #3b82f6; } 100% { box-shadow: 0 0 15px #6366f1; } }
-@keyframes shine { 100% { left: 125%; } }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-.hero { width: 100%; display: flex; justify-content: center; align-items: center; }
-#login { width: 360px; padding: 45px 35px; border-radius: 30px; background: rgba(15,15,15,0.85); border: 1px solid rgba(99,102,241,0.4); backdrop-filter: blur(20px); text-align: center; animation: float 4s ease-in-out infinite, borderGlow 3s ease-in-out infinite; }
-#login h2 { font-weight: 800; margin-bottom: 30px; letter-spacing: 3px; background: linear-gradient(90deg, #6366f1, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-#login input { width: 100%; padding: 15px; margin: 15px 0; border-radius: 14px; border: 1px solid #222; background: #0a0a0a; color: white; outline: none; transition: 0.3s; }
-#login input:focus { border: 1px solid #6366f1; box-shadow: 0 0 15px rgba(99,102,241,0.7); }
-#login button { width: 100%; padding: 15px; margin-top: 20px; border-radius: 50px; border: none; background: linear-gradient(90deg, #6366f1, #3b82f6); color: white; font-weight: 700; cursor: pointer; position: relative; overflow: hidden; transition: 0.3s; }
-#login button::before { content: ""; position: absolute; top: 0; left: -75%; width: 50%; height: 100%; background: linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent); transform: skewX(-20deg); }
-#login button:hover::before { animation: shine 0.8s forwards; }
-#login button:hover { transform: scale(1.07); box-shadow: 0 0 25px rgba(99,102,241,0.8); }
-.download-title { margin-bottom: 25px; font-size: 1.6rem; font-weight: 800; letter-spacing: 2px; background: linear-gradient(90deg, #22d3ee, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: fadeIn 0.6s ease forwards; }
-.download-btn { padding: 16px 40px; border-radius: 50px; background: linear-gradient(90deg, #6366f1, #3b82f6); color: white; text-decoration: none; font-weight: 600; display: inline-block; margin: 10px; }
-#content, #imageArea, #voiceArea { display: none; margin-top: 40px; text-align: center; }
-#imageArea img { max-width: 90%; border-radius: 15px; border: 2px solid #6366f1; margin-top: 20px; }
-.voice-msg { color: #10b981; font-weight: 600; font-size: 1.2rem; }
+    :root {
+        --primary: #6366f1;
+        --secondary: #a855f7;
+        --accent: #22d3ee;
+        --bg: #030303;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+        background-color: var(--bg);
+        color: white;
+        font-family: 'Inter', sans-serif;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    #canvas {
+        position: fixed;
+        top: 0; left: 0;
+        z-index: -1;
+        opacity: 0.2;
+    }
+
+    #login {
+        width: 400px;
+        padding: 50px 40px;
+        border-radius: 20px;
+        background: rgba(10, 10, 10, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(15px);
+        text-align: center;
+        animation: entrance 1s ease-out;
+    }
+
+    @keyframes entrance {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+        font-family: 'Fira Code', monospace;
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 30px;
+        background: linear-gradient(to right, var(--accent), var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    input {
+        width: 100%;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        font-family: 'Fira Code', monospace;
+        outline: none;
+    }
+
+    input:focus { border-color: var(--accent); }
+
+    button {
+        width: 100%;
+        padding: 15px;
+        border-radius: 8px;
+        border: none;
+        background: linear-gradient(45deg, var(--primary), var(--secondary));
+        color: white;
+        font-weight: 700;
+        font-family: 'Fira Code', monospace;
+        cursor: pointer;
+        transition: 0.4s;
+    }
+
+    button:hover { transform: scale(1.02); filter: brightness(1.2); }
+
+    #content, #imageArea, #voiceArea { display: none; text-align: center; }
+
+    .download-btn {
+        padding: 15px 30px;
+        margin: 10px;
+        border-radius: 5px;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        text-decoration: none;
+        display: inline-block;
+        font-family: 'Fira Code', monospace;
+    }
 </style>
 </head>
 <body>
 
+<canvas id="canvas"></canvas>
+
 <section class="hero">
     <div id="login">
-        <h2>ACCESS</h2>
-        <input type="text" id="user" placeholder="Username"><br>
-        <input type="password" id="pass" placeholder="Password"><br>
-        <button onclick="checkLogin()">Enter</button>
-        <p id="msg" style="color:#f87171; margin-top: 10px;"></p>
+        <h2>> VEX_CODE</h2>
+        <input type="text" id="user" placeholder="USER_ID">
+        <input type="password" id="pass" placeholder="ACCESS_KEY">
+        <button onclick="checkLogin()">Initialize</button>
+        <p id="msg" style="color:#ff4d4d; margin-top: 15px; font-family: monospace;"></p>
     </div>
 
     <div id="content">
-        <h2 class="download-title">DOWNLOAD ACCESS GRANTED</h2>
-        <a id="pcDownload" class="download-btn" target="_blank">Download for PC</a>
-        <a id="androidDownload" class="download-btn" target="_blank">Download for Android</a>
+        <h2 style="color: var(--accent)">ENCRYPTED FILES UNLOCKED</h2>
+        <a id="pcDownload" class="download-btn" target="_blank">GET_WIN_X64</a>
+        <a id="androidDownload" class="download-btn" target="_blank">GET_ANDROID_APK</a>
     </div>
 
     <div id="imageArea">
-        <h2>Exclusive Content Unlocked</h2>
-        <img id="secretImg" src="" alt="System Data">
+        <h2>VISUAL_DATA</h2>
+        <img id="secretImg" src="" style="max-width: 80%; border: 1px solid var(--primary); border-radius: 10px;">
     </div>
 
     <div id="voiceArea">
-        <p class="voice-msg">🔊 Playing Secret Voice Line...</p>
+        <p style="color: var(--accent); font-family: 'Fira Code'; font-size: 1.5rem;">[ STREAMING SYSTEM_VOICE... ]</p>
     </div>
 </section>
 
 <script>
-// Logic to decode character arrays
+// --- MATRIX BACKGROUND ---
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+const drops = Array(Math.floor(canvas.width / 16)).fill(1);
+function draw() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#6366f1';
+    drops.forEach((y, i) => {
+        const text = String.fromCharCode(Math.random() * 128);
+        ctx.fillText(text, i * 16, y * 16);
+        if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+    });
+}
+setInterval(draw, 33);
+
+// --- LOGIN DATA ---
 function decode(nums) { return String.fromCharCode(...nums); }
 
-// Data arrays
 const pcLinkNums = [104,116,116,112,115,58,47,47,119,119,119,46,100,114,111,112,98,111,120,46,99,111,109,47,115,99,108,47,102,105,47,97,100,122,114,112,99,56,48,107,113,102,117,109,122,102,103,54,53,107,50,122,47,88,101,110,111,45,118,49,46,51,46,50,53,98,46,122,105,112,63,114,108,107,101,121,61,103,51,101,114,104,113,119,57,119,117,120,101,119,106,54,103,111,99,98,48,118,117,100,103,49,38,115,116,61,98,109,49,115,50,118,114,111,38,100,108,61,49];
 const androidLinkNums = [104,116,116,112,115,58,47,47,119,119,119,46,100,114,111,112,98,111,120,46,99,111,109,47,115,99,108,47,102,105,47,56,55,115,98,52,52,118,121,109,122,109,108,50,121,108,97,115,56,55,114,54,47,68,101,108,116,97,69,120,101,99,117,116,111,114,45,118,50,46,55,48,57,46,97,112,107,63,114,108,107,101,121,61,105,114,111,57,119,114,113,119,102,103,111,97,108,113,48,48,53,119,54,50,112,99,116,117,49,112,38,115,116,61,122,100,109,107,48,99,48,119,38,100,108,61,49];
 const passDL = [48,53,51,50,57,53,48,57,46,99,111,100,101];
 const passImgOriginal = [99,111,100,101,46,48,53,51,50,57,53,48,57];
 const secretPath = [115,121,115,45,109,101,116,97,100,97,116,97,47,99,111,110,102,105,103,95,48,52,50,46,100,97,116,46,106,112,103];
 
-// --- UPDATED DATA ---
-// Password for "voice.002"
-const passVoiceNew = [118, 111, 105, 99, 101, 46, 48, 48, 50]; 
-// Direct link to the MyInstants MP3 file
-const myInstantsSound = "https://www.myinstants.com/media/sounds/ive-got-this-faaaaaaaaahhhhh-66795.mp3";
+// NEW CREDENTIALS DATA
+const passVoice001 = [118, 111, 105, 99, 101, 46, 48, 48, 49]; // voice.001
+const passVoice002 = [118, 111, 105, 99, 101, 46, 48, 48, 50]; // voice.002
+
+const voiceURL001 = "https://raw.githubusercontent.com/VexCodeV2/VexCodeV2.github.io/main/sys-metadata/voice.mp3";
+const voiceURL002 = "https://raw.githubusercontent.com/VexCodeV2/VexCodeV2.github.io/main/sys-metadata/voice2.mp3";
 
 function checkLogin() {
     const userVal = document.getElementById('user').value.trim();
     const passVal = document.getElementById('pass').value.trim();
     const msg = document.getElementById('msg');
 
-    // Reset visibility
     document.getElementById('content').style.display = 'none';
     document.getElementById('imageArea').style.display = 'none';
     document.getElementById('voiceArea').style.display = 'none';
     msg.innerText = '';
 
     if (userVal === 'VexCode') {
-        // Condition for the new voice password
-        if (passVal === decode(passVoiceNew)) {
+        if (passVal === decode(passVoice001)) {
             document.getElementById('voiceArea').style.display = 'block';
-            let audio = new Audio(myInstantsSound);
-            audio.play().catch(() => { 
-                msg.innerText = "Click 'Enter' again to allow sound."; 
-            });
+            new Audio(voiceURL001).play().catch(() => msg.innerText = "Click again to play.");
+        }
+        else if (passVal === decode(passVoice002)) {
+            document.getElementById('voiceArea').style.display = 'block';
+            new Audio(voiceURL002).play().catch(() => msg.innerText = "Click again to play.");
         }
         else if (passVal === decode(passDL)) {
             document.getElementById('login').style.display = 'none';
@@ -105,14 +198,13 @@ function checkLogin() {
             document.getElementById('imageArea').style.display = 'block';
         } 
         else {
-            msg.innerText = 'Incorrect password.';
+            msg.innerText = '[ERROR] INVALID ACCESS KEY';
         }
     } 
     else {
-        msg.innerText = 'User not found.';
+        msg.innerText = '[ERROR] USER NOT RECOGNIZED';
     }
 }
 </script>
-
 </body>
 </html>
