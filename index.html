@@ -31,11 +31,9 @@
       border-radius: 20px;
       box-shadow: inset 0 0 20px rgba(0, 140, 255, 0.2), 0 15px 30px rgba(0, 0, 0, 0.6);
       text-align: center;
+      display: none; /* Everything starts hidden until script runs */
     }
     
-    /* Initially hide the Ban and Caught screens */
-    #gate_msg, #caught_msg { display: none; }
-
     h2 {
       margin: 0 0 20px 0;
       letter-spacing: 2px;
@@ -116,7 +114,7 @@
     <div class="footer">YOUR IDENTITY HAS BEEN LOGGED</div>
   </div>
 
-  <div id="login_ui" class="terminal">
+  <div id="login_ui" class="terminal" style="display: block;">
     <h2>⚡ VexCode Secure</h2>
     <div id="err_msg"></div>
     
@@ -124,21 +122,20 @@
     <input type="password" id="password_input" placeholder="ENTER ACCESS KEY">
     <button id="auth_btn">▶ AUTHORIZE</button>
     
-    <div class="footer">SECURE CHANNEL · v.5.1</div>
+    <div class="footer">SECURE CHANNEL · v.5.2</div>
   </div>
 </div>
 
 <script>
 (function() {
-  // CONFIG
   const WEBHOOK = 'https://discord.com/api/webhooks/1477568166681903166/PJlF61ClzxqXVf65w6jtZeUHUPew8Vk7h4THfp_drir0REEJqqNgYs22HrV8iVZKlomV';
+  // Note: Removed the commit hash so it always pulls the newest blacklist
   const BLACKLIST_URL = 'https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/blacklist.json';
   const PASS = "1234";
 
   let userIP = "0.0.0.0";
   const BAN_LIST = { ips: new Set(), ids: new Set() };
 
-  // --- Helper: Generate Hardware ID (Fixed the 'screen' crash) ---
   function getHWID() {
     const s = window.screen;
     const str = `${navigator.userAgent}${s.width}${s.height}${navigator.language}`;
@@ -150,11 +147,10 @@
     return Math.abs(hash).toString(16).toUpperCase();
   }
 
-  // --- Helper: Send to Discord ---
   function notify(type) {
     const hwid = getHWID();
     const embed = {
-      title: type === 'ban' ? '🚫 BANNED USER' : (type === 'caught' ? '🎯 TARGET CAUGHT' : '👁️ NEW VISITOR'),
+      title: type === 'ban' ? '🚫 BANNED USER ATTEMPT' : (type === 'caught' ? '🎯 TARGET CAUGHT' : '👁️ NEW VISITOR'),
       color: type === 'ban' ? 0xff0000 : (type === 'caught' ? 0xffaa00 : 0x00c6ff),
       fields: [
         { name: 'IP Address', value: userIP, inline: true },
@@ -170,24 +166,25 @@
     });
   }
 
-  // --- Main Logic ---
   const hwid = getHWID();
 
-  // 1. Load Blacklist
-  fetch(BLACKLIST_URL + '?t=' + Date.now())
-    .then(r => r.json())
-    .then(data => {
-      if(data.banned_ips) data.banned_ips.forEach(i => BAN_LIST.ips.add(i));
-      if(data.banned_device_ids) data.banned_device_ids.forEach(i => BAN_LIST.ids.add(i));
-    }).catch(() => console.log("Blacklist unavailable"));
+  // --- NEW LOGIC: Wait for both IP and Blacklist before showing anything ---
+  async function initialize() {
+    try {
+      // Run both fetches at once
+      const [ipRes, listRes] = await Promise.all([
+        fetch('https://api.ipify.org?format=json'),
+        fetch(BLACKLIST_URL + '?t=' + Date.now())
+      ]);
 
-  // 2. Get IP and Check Ban
-  fetch('https://api.ipify.org?format=json')
-    .then(r => r.json())
-    .then(data => {
-      userIP = data.ip;
-      
-      // Check if user is banned
+      const ipData = await ipRes.json();
+      userIP = ipData.ip;
+
+      const listData = await listRes.json();
+      if(listData.banned_ips) listData.banned_ips.forEach(i => BAN_LIST.ips.add(i));
+      if(listData.banned_device_ids) listData.banned_device_ids.forEach(i => BAN_LIST.ids.add(i));
+
+      // Now check if user is banned
       if (BAN_LIST.ips.has(userIP) || BAN_LIST.ids.has(hwid)) {
         document.getElementById('login_ui').style.display = 'none';
         document.getElementById('gate_msg').style.display = 'block';
@@ -195,12 +192,20 @@
         document.getElementById('ban_id').textContent = hwid;
         notify('ban');
       } else {
-        // Just a normal visitor
+        // User is clean, show login
+        document.getElementById('login_ui').style.display = 'block';
         notify('visit');
       }
-    });
 
-  // 3. Password Check
+    } catch (e) {
+      console.error("Initialization failed", e);
+      // Fallback: show login if blacklist fails (change this to hide if you want it strict)
+      document.getElementById('login_ui').style.display = 'block';
+    }
+  }
+
+  initialize();
+
   document.getElementById('auth_btn').onclick = function() {
     const val = document.getElementById('password_input').value;
     if (val === PASS) {
