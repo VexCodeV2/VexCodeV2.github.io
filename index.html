@@ -14,7 +14,7 @@
     .fingerprint-box { background: rgba(5, 10, 22, 0.9); border: 1px solid #1e90ff; border-radius: 15px; padding: 20px; margin-bottom: 25px; text-align: left; position: relative; }
     .fp-label { position: absolute; top: -12px; left: 20px; background: #12213d; padding: 2px 12px; border-radius: 8px; font-size: 10px; border: 1px solid #1e90ff; color: #8cbaff; font-weight: bold; }
     .stat-row { display: flex; justify-content: space-between; font-size: 11px; padding: 8px 0; border-bottom: 1px solid rgba(30, 144, 255, 0.15); }
-    .stat-val { color: #00ffb3; font-weight: bold; text-align: right; }
+    .stat-val { color: #00ffb3; font-weight: bold; text-align: right; word-break: break-all; max-width: 60%; }
     input { width: 100%; padding: 15px; background: #050a16; border: 1px solid #1e90ff; border-radius: 12px; color: #4db8ff; box-sizing: border-box; outline: none; margin-bottom: 20px; }
     button { width: 100%; padding: 18px; border: none; border-radius: 15px; background: linear-gradient(90deg, #0099ff, #00d4ff); color: #001428; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; }
     .banned-border { background: linear-gradient(135deg, #ff4d4d, #ff0000, #ff4d4d) !important; }
@@ -29,9 +29,9 @@
     <div class="header-logo">⚡ VexCode Secure</div>
     <div class="fingerprint-box">
       <div class="fp-label">🔍 SYSTEM FINGERPRINT</div>
-      <div class="stat-row"><span>IP Address</span><span id="fp_ip">...</span></div>
-      <div class="stat-row"><span>Device ID</span><span id="fp_hwid">...</span></div>
-      <div class="stat-row"><span>OS</span><span id="fp_os">...</span></div>
+      <div class="stat-row"><span>IPv4/v6</span><span class="stat-val" id="fp_ip">detecting...</span></div>
+      <div class="stat-row"><span>OS Type</span><span class="stat-val" id="fp_os">...</span></div>
+      <div class="stat-row"><span>Device ID</span><span class="stat-val" id="fp_hwid">...</span></div>
     </div>
     <input type="password" id="pass_field" placeholder="ENTER ACCESS KEY">
     <button id="auth_btn">▶ AUTHORIZE SYSTEM</button>
@@ -47,12 +47,19 @@
 
 <script>
 (function() {
-  // YOUR UPDATED WEBHOOK
   const WEBHOOK = 'https://discord.com/api/webhooks/1478242418032906383/8lFqUlSNiBNqq2i3jkNuJHAXzy2LSrA3KKOKytOeclziWSQios0hJKSUiXncuJy-OyTt';
   const GIST_RAW = 'https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/blacklist.json';
-  
-  // DIFFERENT PROXY: This one is better for local files
   const PROXY = 'https://api.codetabs.com/v1/proxy?quest=';
+
+  function getDetailedOS() {
+    const ua = navigator.userAgent;
+    if (ua.indexOf("Win") != -1) return "Windows (" + (navigator.userAgentData?.platform || "PC") + ")";
+    if (ua.indexOf("Mac") != -1) return "macOS (Apple)";
+    if (ua.indexOf("Linux") != -1) return "Linux";
+    if (ua.indexOf("Android") != -1) return "Android";
+    if (ua.indexOf("iPhone") != -1) return "iOS (iPhone)";
+    return "Unknown OS";
+  }
 
   function getHWID() {
     const s = window.screen;
@@ -62,8 +69,7 @@
     return Math.abs(hash).toString(16).toUpperCase().substring(0, 7);
   }
 
-  async function sendDiscord(title, ip, hwid) {
-    // Adding headers to prevent Discord from blocking the 'origin null'
+  async function sendDiscord(title, ip, hwid, os) {
     await fetch(WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -72,30 +78,33 @@
           title: title,
           color: title.includes("BANNED") ? 16711680 : 524287,
           fields: [
-            {name: "IP", value: ip, inline: true},
-            {name: "HWID", value: hwid, inline: true}
-          ]
+            {name: "IP Address", value: ip, inline: false},
+            {name: "Device HWID", value: hwid, inline: true},
+            {name: "OS Type", value: os, inline: true}
+          ],
+          footer: { text: "VexCode Security " + new Date().toLocaleTimeString() }
         }]
       })
-    }).catch(e => console.log("Discord error:", e));
+    }).catch(() => {});
   }
 
   async function init() {
     const hwid = getHWID();
+    const osType = getDetailedOS();
     document.getElementById('fp_hwid').innerText = hwid;
-    document.getElementById('fp_os').innerText = navigator.platform;
+    document.getElementById('fp_os').innerText = osType;
 
     try {
-      // Get IP
-      const ipRes = await fetch('https://api.ipify.org?format=json');
+      // IPv6/IPv4 Hybrid Fetch
+      const ipRes = await fetch('https://api64.ipify.org?format=json');
       const ipData = await ipRes.json();
       const userIP = ipData.ip;
       document.getElementById('fp_ip').innerText = userIP;
 
-      // Send Discord Ping IMMEDIATELY
-      await sendDiscord("👁️ SYSTEM ACCESS LOGGED", userIP, hwid);
+      // Notify Discord
+      await sendDiscord("👁️ SYSTEM ACCESS LOGGED", userIP, hwid, osType);
 
-      // Fetch Blacklist using the new Proxy
+      // Fetch Blacklist
       const listRes = await fetch(PROXY + encodeURIComponent(GIST_RAW));
       const blacklist = await listRes.json();
 
@@ -104,21 +113,21 @@
         document.getElementById('gate_msg').style.display = 'block';
         document.getElementById('main_wrap').classList.add('banned-border');
         document.getElementById('ban_ip').innerText = userIP;
-        await sendDiscord("⛔ BANNED USER DETECTED", userIP, hwid);
+        await sendDiscord("⛔ BANNED USER DETECTED", userIP, hwid, osType);
       }
     } catch (e) {
-      console.error("Init Error:", e);
+      console.log("Error during init:", e);
     }
   }
 
   init();
 
   document.getElementById('auth_btn').onclick = () => {
-    if(document.getElementById('pass_field').value === "1234") alert("GRANTED");
+    if(document.getElementById('pass_field').value === "1234") alert("AUTHORIZED");
     else alert("DENIED");
   };
 
-  // Matrix Background
+  // Background Animation
   const c = document.getElementById('v_');
   const x = c.getContext('2d');
   function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
