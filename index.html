@@ -32,7 +32,8 @@
       box-shadow: inset 0 0 20px rgba(0, 140, 255, 0.2), 0 15px 30px rgba(0, 0, 0, 0.6);
       text-align: center;
     }
-    /* Hidden by default so they don't overlap the login */
+    
+    /* Initially hide the Ban and Caught screens */
     #gate_msg, #caught_msg { display: none; }
 
     h2 {
@@ -48,11 +49,10 @@
       border: 1px solid #1e90ff;
       border-radius: 12px;
       padding: 12px;
-      margin-bottom: 20px;
+      margin-top: 15px;
       font-size: 11px;
       text-align: left;
       color: #8cbaff;
-      box-shadow: inset 0 0 8px rgba(0,100,255,0.3);
     }
     .sysinfo-row {
       display: flex;
@@ -60,32 +60,20 @@
       padding: 4px 0;
       border-bottom: 1px dotted #1e4f7a;
     }
-    .sysinfo-row:last-child { border-bottom: none; }
-    .sysinfo-label { opacity: 0.7; letter-spacing: 0.5px; }
-    .sysinfo-value { font-weight: bold; color: #00ffb3; max-width: 180px; overflow: hidden; text-overflow: ellipsis; }
-    .badge {
-      display: inline-block;
-      background: #1e3a5f;
-      padding: 4px 10px;
-      border-radius: 30px;
-      font-size: 10px;
-      color: #b3d9ff;
-      margin: 10px 0 5px;
-    }
-    label { font-size: 11px; opacity: 0.7; display: block; text-align: left; margin-left: 5px; }
+    .sysinfo-value { font-weight: bold; color: #00ffb3; }
+    
+    label { font-size: 11px; opacity: 0.7; display: block; text-align: left; margin-bottom: 5px; }
     input {
       width: 100%;
-      padding: 10px;
-      margin: 6px 0 15px 0;
+      padding: 12px;
+      margin-bottom: 15px;
       background: #050a16;
       border: 1px solid #1e90ff;
       border-radius: 10px;
       color: #4db8ff;
       box-sizing: border-box;
       outline: none;
-      transition: 0.3s;
     }
-    input:focus { border-color: #00c6ff; box-shadow: 0 0 8px rgba(0, 198, 255, 0.6); }
     button {
       width: 100%;
       padding: 12px;
@@ -93,26 +81,13 @@
       border-radius: 12px;
       background: linear-gradient(90deg, #1e90ff, #00c6ff);
       font-weight: bold;
-      letter-spacing: 1px;
       cursor: pointer;
       color: #001428;
-      transition: 0.3s;
       text-transform: uppercase;
-      margin-top: 10px;
     }
-    button:hover { box-shadow: 0 0 12px rgba(0, 198, 255, 0.8); transform: translateY(-1px); }
-    .footer { margin-top: 15px; font-size: 10px; opacity: 0.5; }
-    #err_msg { color: #ff4d4d; font-size: 10px; margin-bottom: 10px; height: 12px; }
-    .webhook-status { font-size: 9px; color: #557c9f; margin-top: 5px; }
-    .caught-message {
-      color: #ff5555;
-      font-size: 24px;
-      font-weight: bold;
-      text-transform: uppercase;
-      margin: 30px 0;
-      text-shadow: 0 0 15px #ff0000;
-      animation: pulse 1s infinite;
-    }
+    #err_msg { color: #ff4d4d; font-size: 10px; margin-bottom: 10px; min-height: 12px; }
+    .footer { margin-top: 15px; font-size: 10px; opacity: 0.4; }
+    .caught-message { color: #ff5555; font-size: 22px; font-weight: bold; margin: 20px 0; animation: pulse 1s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
   </style>
 </head>
@@ -123,165 +98,124 @@
 <div class="wrapper">
   <div id="gate_msg" class="terminal">
     <h2 style="color:#ff4d4d;">⛔ ACCESS REVOKED</h2>
-    <div id="ban_reason" style="color: #ff5555; font-size: 12px; margin-bottom: 15px;">DEVICE FINGERPRINT LOCKED</div>
-    <div class="sysinfo-panel" style="color:#ff8888;">
-      <div class="sysinfo-row"><span class="sysinfo-label">IP</span><span class="sysinfo-value" id="ban_ip">-</span></div>
-      <div class="sysinfo-row"><span class="sysinfo-label">DEVICE</span><span class="sysinfo-value" id="ban_device">-</span></div>
-      <div class="sysinfo-row"><span class="sysinfo-label">HWID</span><span class="sysinfo-value" id="ban_hwid">-</span></div>
+    <div style="font-size: 12px; margin-bottom: 10px;">DEVICE PERMANENTLY BLACKLISTED</div>
+    <div class="sysinfo-panel">
+      <div class="sysinfo-row"><span>IP</span><span id="ban_ip">-</span></div>
+      <div class="sysinfo-row"><span>HWID</span><span id="ban_id">-</span></div>
     </div>
-    <div class="footer">🔒 BAN ENFORCED</div>
   </div>
 
   <div id="caught_msg" class="terminal">
-    <h2 style="color:#ff5555;">⚠️ ACCESS GRANTED</h2>
+    <h2 style="color:#ff5555;">⚠️ SECURITY BREACH</h2>
     <div class="caught-message">YOU GOT CAUGHT</div>
-    <div class="sysinfo-panel" style="color:#ff8888;">
-      <div class="sysinfo-row"><span class="sysinfo-label">IP</span><span class="sysinfo-value" id="caught_ip">-</span></div>
-      <div class="sysinfo-row"><span class="sysinfo-label">DEVICE</span><span class="sysinfo-value" id="caught_device">-</span></div>
-      <div class="sysinfo-row"><span class="sysinfo-label">HWID</span><span class="sysinfo-value" id="caught_hwid">-</span></div>
+    <div class="sysinfo-panel">
+      <div class="sysinfo-row"><span>IP</span><span id="caught_ip">-</span></div>
+      <div class="sysinfo-row"><span>DEVICE</span><span id="caught_dev">-</span></div>
+      <div class="sysinfo-row"><span>OS</span><span id="caught_os">-</span></div>
     </div>
-    <div class="footer">🔒 DATA LOGGED TO DISCORD</div>
+    <div class="footer">YOUR IDENTITY HAS BEEN LOGGED</div>
   </div>
 
   <div id="login_ui" class="terminal">
     <h2>⚡ VexCode Secure</h2>
     <div id="err_msg"></div>
     
-    <div class="badge">🔍 SYSTEM FINGERPRINT</div>
-    <div class="sysinfo-panel">
-      <div class="sysinfo-row"><span class="sysinfo-label">IP</span><span class="sysinfo-value" id="display_ip">loading...</span></div>
-      <div class="sysinfo-row"><span class="sysinfo-label">DEVICE</span><span class="sysinfo-value" id="display_device">-</span></div>
-      <div class="sysinfo-row"><span class="sysinfo-label">OS</span><span class="sysinfo-value" id="display_os">-</span></div>
-      <div class="sysinfo-row"><span class="sysinfo-label">ID</span><span class="sysinfo-value" id="display_id">-</span></div>
-    </div>
-    <div class="webhook-status" id="webhook_ack">⚡ initializing...</div>
-
-    <label>ENTER PASSWORD</label>
-    <input type="password" id="password_input" placeholder="••••••••" autocomplete="off">
-    <button id="auth_btn">▶ SUBMIT</button>
-    <div class="footer">SECURE CHANNEL · v.5</div>
+    <label>SYSTEM AUTHENTICATION</label>
+    <input type="password" id="password_input" placeholder="ENTER ACCESS KEY">
+    <button id="auth_btn">▶ AUTHORIZE</button>
+    
+    <div class="footer">SECURE CHANNEL · v.5.1</div>
   </div>
 </div>
 
 <script>
 (function() {
-  const WEBHOOK_URL = 'https://discord.com/api/webhooks/1477568166681903166/PJlF61ClzxqXVf65w6jtZeUHUPew8Vk7h4THfp_drir0REEJqqNgYs22HrV8iVZKlomV';
+  // CONFIG
+  const WEBHOOK = 'https://discord.com/api/webhooks/1477568166681903166/PJlF61ClzxqXVf65w6jtZeUHUPew8Vk7h4THfp_drir0REEJqqNgYs22HrV8iVZKlomV';
   const BLACKLIST_URL = 'https://gist.githubusercontent.com/VexCodeV2/f4081441720e8b72f60bbc6046e39371/raw/blacklist.json';
-  const CORRECT_PASSWORD = "1234";
+  const PASS = "1234";
 
-  let currentIP = '0.0.0.0';
-  let isFingerprintSent = false;
-  const BAN_LIST = { ips: new Set(), deviceIds: new Set(), browsers: new Set(), os: new Set() };
+  let userIP = "0.0.0.0";
+  const BAN_LIST = { ips: new Set(), ids: new Set() };
 
-  // --- Utility Functions ---
-  function getBrowser() {
-    const ua = navigator.userAgent;
-    if (ua.includes('Chrome')) return 'Chrome';
-    if (ua.includes('Firefox')) return 'Firefox';
-    if (ua.includes('Safari')) return 'Safari';
-    return 'Unknown';
-  }
-
-  function getOS() {
-    const ua = navigator.userAgent;
-    if (ua.includes('Windows')) return 'Windows';
-    if (ua.includes('Mac')) return 'macOS';
-    if (ua.includes('Linux')) return 'Linux';
-    if (ua.includes('Android')) return 'Android';
-    if (ua.includes('iPhone')) return 'iOS';
-    return 'Unknown OS';
-  }
-
-  function generateDeviceId() {
-    // FIX: Renamed 'screen' variable to 's' to avoid naming conflicts
+  // --- Helper: Generate Hardware ID (Fixed the 'screen' crash) ---
+  function getHWID() {
     const s = window.screen;
-    const base = `${navigator.userAgent}${s.width}${s.height}${s.colorDepth}${navigator.language}`;
+    const str = `${navigator.userAgent}${s.width}${s.height}${navigator.language}`;
     let hash = 0;
-    for (let i = 0; i < base.length; i++) {
-      hash = ((hash << 5) - hash) + base.charCodeAt(i);
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) - hash) + str.charCodeAt(i);
       hash |= 0;
     }
-    return Math.abs(hash).toString(16) + "vx";
+    return Math.abs(hash).toString(16).toUpperCase();
   }
 
-  // --- Core Logic ---
-  async function fetchBanList() {
-    try {
-      const r = await fetch(BLACKLIST_URL + '?t=' + Date.now());
-      const data = await r.json();
-      if(data.banned_ips) data.banned_ips.forEach(i => BAN_LIST.ips.add(i));
-      if(data.banned_device_ids) data.banned_device_ids.forEach(i => BAN_LIST.deviceIds.add(i));
-      document.getElementById('webhook_ack').innerText = '📋 ban list active';
-    } catch (e) {
-      document.getElementById('webhook_ack').innerText = '⚠️ offline mode';
-    }
-  }
-
-  function sendToDiscord(type) {
+  // --- Helper: Send to Discord ---
+  function notify(type) {
+    const hwid = getHWID();
     const embed = {
-      title: type === 'ban' ? '🚫 BAN TRIGGERED' : (type === 'caught' ? '🎯 GOT CAUGHT' : '👁️ NEW VISITOR'),
-      color: type === 'ban' ? 0xff5555 : (type === 'caught' ? 0xffaa00 : 0x00c6ff),
+      title: type === 'ban' ? '🚫 BANNED USER' : (type === 'caught' ? '🎯 TARGET CAUGHT' : '👁️ NEW VISITOR'),
+      color: type === 'ban' ? 0xff0000 : (type === 'caught' ? 0xffaa00 : 0x00c6ff),
       fields: [
-        { name: 'IP', value: currentIP, inline: true },
-        { name: 'OS', value: getOS(), inline: true },
-        { name: 'HWID', value: generateDeviceId(), inline: false }
+        { name: 'IP Address', value: userIP, inline: true },
+        { name: 'Hardware ID', value: hwid, inline: true },
+        { name: 'Browser/OS', value: navigator.platform, inline: false }
       ],
       timestamp: new Date().toISOString()
     };
-    fetch(WEBHOOK_URL, {
+    fetch(WEBHOOK, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ embeds: [embed] })
     });
   }
 
-  function checkBan() {
-    const id = generateDeviceId();
-    if (BAN_LIST.ips.has(currentIP) || BAN_LIST.deviceIds.has(id)) {
-      document.getElementById('login_ui').style.display = 'none';
-      document.getElementById('gate_msg').style.display = 'block';
-      document.getElementById('ban_ip').textContent = currentIP;
-      document.getElementById('ban_hwid').textContent = id;
-      document.getElementById('ban_device').textContent = getBrowser();
-      return true;
-    }
-    return false;
-  }
+  // --- Main Logic ---
+  const hwid = getHWID();
 
-  // --- Execution ---
-  const deviceID = generateDeviceId();
-  document.getElementById('display_id').textContent = deviceID;
-  document.getElementById('display_os').textContent = getOS();
-  document.getElementById('display_device').textContent = getBrowser();
+  // 1. Load Blacklist
+  fetch(BLACKLIST_URL + '?t=' + Date.now())
+    .then(r => r.json())
+    .then(data => {
+      if(data.banned_ips) data.banned_ips.forEach(i => BAN_LIST.ips.add(i));
+      if(data.banned_device_ids) data.banned_device_ids.forEach(i => BAN_LIST.ids.add(i));
+    }).catch(() => console.log("Blacklist unavailable"));
 
-  fetchBanList().then(() => {
-    fetch('https://api.ipify.org?format=json')
-      .then(r => r.json())
-      .then(data => {
-        currentIP = data.ip;
-        document.getElementById('display_ip').textContent = currentIP;
-        if (!checkBan() && !isFingerprintSent) {
-          sendToDiscord('visit');
-          isFingerprintSent = true;
-        }
-      });
-  });
+  // 2. Get IP and Check Ban
+  fetch('https://api.ipify.org?format=json')
+    .then(r => r.json())
+    .then(data => {
+      userIP = data.ip;
+      
+      // Check if user is banned
+      if (BAN_LIST.ips.has(userIP) || BAN_LIST.ids.has(hwid)) {
+        document.getElementById('login_ui').style.display = 'none';
+        document.getElementById('gate_msg').style.display = 'block';
+        document.getElementById('ban_ip').textContent = userIP;
+        document.getElementById('ban_id').textContent = hwid;
+        notify('ban');
+      } else {
+        // Just a normal visitor
+        notify('visit');
+      }
+    });
 
+  // 3. Password Check
   document.getElementById('auth_btn').onclick = function() {
-    const pass = document.getElementById('password_input').value;
-    if (pass === CORRECT_PASSWORD) {
+    const val = document.getElementById('password_input').value;
+    if (val === PASS) {
       document.getElementById('login_ui').style.display = 'none';
       document.getElementById('caught_msg').style.display = 'block';
-      document.getElementById('caught_ip').textContent = currentIP;
-      document.getElementById('caught_hwid').textContent = deviceID;
-      document.getElementById('caught_device').textContent = getBrowser();
-      sendToDiscord('caught');
+      document.getElementById('caught_ip').textContent = userIP;
+      document.getElementById('caught_dev').textContent = navigator.vendor || "Generic";
+      document.getElementById('caught_os').textContent = navigator.platform;
+      notify('caught');
     } else {
-      document.getElementById('err_msg').textContent = 'ACCESS DENIED';
+      document.getElementById('err_msg').textContent = 'INVALID ACCESS KEY';
     }
   };
 
-  // Matrix Background logic
+  // Matrix BG
   const c = document.getElementById('v_');
   const x = c.getContext('2d');
   function resize() { c.width = window.innerWidth; c.height = window.innerHeight; }
